@@ -104,9 +104,6 @@ export default function Layout({ children, home }) {
 
   return (
     <div className={styles.container}>
-      <Head>
-        <link rel="icon" href="http://localhost:3000/favicon.ico" />
-      </Head>
       <AppBar
         position="fixed"
         className={clsx(classes.appBar, {
@@ -145,8 +142,14 @@ export default function Layout({ children, home }) {
         </div>
         <Divider />
         <List>
-          {["Inbox", "Starred", "Send email", "Drafts"].map((text, index) => (
-            <ListItem button key={text}>
+          {["videos", "filesystem", "email"].map((text, index) => (
+            <ListItem
+              button
+              key={text}
+              onClick={() => {
+                document.location = "/" + text;
+              }}
+            >
               <ListItemIcon>
                 {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
               </ListItemIcon>

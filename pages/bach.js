@@ -1,5 +1,5 @@
 import EnvelopConfig from "../components/envelop-config";
-import Head from "next/Head";
+import Head from "next/head";
 import { useState } from "react";
 import Layout, { siteTitle } from "../components/layout";
 import Card from "@material-ui/core/Card";

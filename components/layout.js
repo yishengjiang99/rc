@@ -142,7 +142,7 @@ export default function Layout({ children, home }) {
         </div>
         <Divider />
         <List>
-          {["videos", "filesystem", "email"].map((text, index) => (
+          {["videos", "filesystem", "bach"].map((text, index) => (
             <ListItem
               button
               key={text}
@@ -159,7 +159,7 @@ export default function Layout({ children, home }) {
         </List>
         <Divider />
         <List>
-          {["All mail", "Trash", "Spam"].map((text, index) => (
+          {["jazz", "radio", "spotiy"].map((text, index) => (
             <ListItem button key={text}>
               <ListItemIcon>
                 {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}

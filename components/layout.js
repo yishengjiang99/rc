@@ -1,4 +1,4 @@
-import Head from "next/head";
+import Head from "";
 import clsx from "clsx";
 import Drawer from "@material-ui/core/Drawer";
 import CssBaseline from "@material-ui/core/CssBaseline";
@@ -178,19 +178,7 @@ export default function Layout({ children, home }) {
               alt={name}
             />
           </>
-        ) : (
-          <>
-            <Link href="/">
-              <a>
-                <img
-                  src="/images/logo.png"
-                  className={`${styles.headerImage} ${utilStyles.borderCircle}`}
-                  alt={name}
-                />
-              </a>
-            </Link>
-          </>
-        )}
+        ) : null}
       </header>
       <main>{children}</main>
       {!home && (

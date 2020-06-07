@@ -13,7 +13,7 @@ const useStyles = makeStyles({
   },
 });
 
-export default function FileSystemNavigator() {
+export default function FileSystemNavigator(files) {
   const classes = useStyles();
 
   return (

@@ -103,7 +103,8 @@ export class PianoKeyboard extends HTMLElement {
 
       el.addEventListener("mouseup", (e) => {
         const note = parseFloat(e.target.dataset.note);
-        self.adsrs[note] && self.adsrs[note].release(self.ctx.currentTime);
+        self.adsrs[note] &&
+          self.adsrs[note].triggerRelease(self.ctx.currentTime);
       });
     });
 

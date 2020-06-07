@@ -5,14 +5,14 @@ import { useState } from "react";
 export default function Bach(props) {
   const [settings, setSettings] = useState({
     envelope: {
-      attack: 0.5,
-      decay: 0.5,
-      release: 0.1,
-      sustain: 0.5,
+      attack: 0.1,
+      decay: 0.1,
+      sustain: 0.1,
+      release: 0.1, //0.01
     },
     volume: {
       min: 0,
-      max: 3,
+      max: 6,
     },
   });
   function updateAttribute(attribute, value) {

@@ -1,4 +1,4 @@
-import Head from "";
+import Head from "next/head";
 import clsx from "clsx";
 import Drawer from "@material-ui/core/Drawer";
 import CssBaseline from "@material-ui/core/CssBaseline";

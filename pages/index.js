@@ -5,6 +5,8 @@ import utilStyles from "../styles/utils.module.css";
 import { getSortedPostsData } from "../lib/posts";
 import Date from "../components/date";
 import FileSystemNavigator from "../components/tree";
+import EnvelopConfig from "../components/envelop-config";
+
 export default function Home({ allPostsData }) {
   return (
     <Layout home>
@@ -30,6 +32,14 @@ export default function Home({ allPostsData }) {
         </ul>
       </section>
       <FileSystemNavigator />
+      <EnvelopConfig
+        defaults={{
+          attack: 0.5,
+          decay: 0.5,
+          release: 0.1,
+          sustain: 0.5,
+        }}
+      />
     </Layout>
   );
 }

@@ -116,7 +116,11 @@ export class PianoKeyboard extends HTMLElement {
       if (!self.adsrs[note]) {
         self.adsrs[note] = self._getNote(note);
       }
-      self.adsrs[note].trigger(self.ctx.currentTime);
+      if (e.repeat) {
+        self.adsrs[note].hold(self.ctx.currentTime);
+      } else {
+        self.adsrs[note].trigger(self.ctx.currentTime);
+      }
     };
     window.onkeyup = function (e) {
       const index = keys.indexOf(e.key);

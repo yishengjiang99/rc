@@ -29,6 +29,9 @@ Envelope.prototype.trigger = function (time) {
   );
   this.param.cancelAndHoldAtTime(time + this.attack + this.decay);
 };
+Envelope.prototype.hold = function (time) {
+  this.param.cancelAndHoldAtTime(time + this.attack + this.decay);
+};
 
 Envelope.prototype.triggerRelease = function (time) {
   this.param.cancelScheduledValues(time);

@@ -43,13 +43,6 @@ export default function Bach(props) {
         onInput={updateAttribute}
       ></EnvelopConfig>
       <piano-keyboard
-        style={{
-          position: "fixed",
-          height: "300px",
-          bottom: 20,
-          left: 0,
-          width: "100vw",
-        }}
         attack={settings.envelope.attack}
         release={settings.envelope.release}
         decay={settings.envelope.decay}

@@ -13,6 +13,7 @@ class MyDocument extends Document {
         <body>
           <Main />
           <NextScript />
+          <div id="debug"></div>
           <script type="module" src="index.js"></script>
         </body>
       </Html>

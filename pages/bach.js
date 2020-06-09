@@ -24,7 +24,7 @@ export default function Bach(props) {
     });
   }
   return (
-    <Layout>
+    <>
       <Head>
         <script type="application/javascript" src="/_console.js"></script>
 
@@ -51,6 +51,6 @@ export default function Bach(props) {
         decay={settings.envelope.decay}
         sustain={settings.envelope.sustain}
       ></piano-keyboard>
-    </Layout>
+    </>
   );
 }

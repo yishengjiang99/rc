@@ -194,7 +194,6 @@ export class PianoKeyboard extends HTMLElement {
 
     gain.connect(this.masterGain);
     gain.connect(this.masterGain);
-    // gainEnvelope.trigger(ctx.currentTime);
     return gainEnvelope;
   }
 }

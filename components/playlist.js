@@ -8,6 +8,7 @@ import {
   CardContent,
   Button,
   ButtonGroup,
+  IconButton,
 } from "@material-ui/core";
 import Select from "react-select";
 
@@ -74,24 +75,27 @@ const Playlist = (props) => {
       <>
         {chunk(sounds, 3).map((chk) => {
           return (
-            <ButtonGroup
-              size="large"
-              color="primary"
-              aria-label="large outlined primary button group"
-            >
-              {chk.map((sound) => {
-                return (
-                  <Button
-                    onClick={(e) => {
-                      setUserTriggered(true);
-                      setNowPlaying(sound);
-                    }}
-                  >
-                    {basename(sound)}
-                  </Button>
-                );
-              })}
-            </ButtonGroup>
+            <div>
+              <ButtonGroup
+                display="block"
+                size="large"
+                color="primary"
+                aria-label="large outlined primary button group"
+              >
+                {chk.map((sound) => {
+                  return (
+                    <Button
+                      onClick={(e) => {
+                        setUserTriggered(true);
+                        setNowPlaying(sound);
+                      }}
+                    >
+                      {basename(sound)}
+                    </Button>
+                  );
+                })}
+              </ButtonGroup>
+            </div>
           );
         })}
       </>
@@ -117,7 +121,7 @@ const Playlist = (props) => {
     );
   };
   return (
-    <Card>
+    <Card display="inline">
       <CardHeader title={basename(nowPlaying)} />
       <CardContent>
         <BgSound

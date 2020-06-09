@@ -37,14 +37,11 @@ export default function Bach(props) {
         <script type="module" src="/keyboard/piano.js"></script>
       </Head>
 
-      <Panel>
-        <EnvelopConfig
-          style={{ maxWidth: "200px" }}
-          defaults={settings.envelope}
-          onInput={updateAttribute}
-        ></EnvelopConfig>
-      </Panel>
-
+      <EnvelopConfig
+        style={{ maxWidth: "200px" }}
+        defaults={settings.envelope}
+        onInput={updateAttribute}
+      ></EnvelopConfig>
       <piano-keyboard
         style={{
           position: "fixed",

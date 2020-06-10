@@ -33,8 +33,22 @@ Envelope.prototype.hold = function (time) {
   this.param.cancelAndHoldAtTime(time + this.attack + this.decay);
 };
 
-Envelope.prototype.triggerRelease = function (time) {
+Envelope.prototype.triggerRelease = async function (time) {
   this.param.cancelScheduledValues(time);
+  let extraWait = 0;
+  if (time < this.attackTime) {
+    await sleep(this.attackTime - time);
+    extraWait = this.attackTime - time;
+    _console.log(extraWait, "extrawait");
+  }
 
-  this.param.setTargetAtTime(0.000001, time, this.release);
+  this.param.setTargetAtTime(
+    0.000001,
+    time + extraWait,
+    this.release + extraWait
+  );
 };
+
+function sleep(sec) {
+  return new Promise((resolve) => setTimeout(resolve, sec * 1000));
+}

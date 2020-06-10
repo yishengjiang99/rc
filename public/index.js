@@ -1,32 +1,30 @@
-function audioCtx() {
-  window.g_audioCtx = window.g_audioCtx || new AudioContext();
-  var ctx = window.g_audioCtx;
-  var inputs = Array(10);
-  var inputMasterGain = new GainNode(ctx, { gain: 1 });
-  inputMasterGain.connect(ctx.destination);
-  const AudioInput = function (inputNode) {
-    var node = inputNode;
-    var gain = new GainNode(ctx, { gain: 1 });
-    var stateText = "";
-    node.connect(gain).connect(inputMasterGain);
-    return {
-      inputNode,
-      gain,
-      stateText,
-    };
-  };
-
-  return {
-    ctx,
-    elementInput: function (audioMediaElement, index) {
-      const node = AudioInput(ctx.createMediaElementSource(audioMediaElement));
-      inputs[index] = node;
-      return node;
-    },
-  };
+class InputNode {
+  constructor(ctx, audioNode) {
+    this.inputNode = audioNode;
+    this.gain = ctx.createGain(1);
+    this.statusText = "";
+    this.inputNode.connect(gain);
+  }
+  connect(node) {
+    this.gain.disconnect();
+    this.gain.connect(node);
+  }
 }
 
-window.audioCtx = audioCtx;
+const gAudioContext = (function kAudioContext() {
+  var ctx, inputs, inputMasterGain;
+  inputs = Array(10);
+  return {
+    init: () => (ctx = ctx || new AudioContext()),
+    setAudioTag: (audioMediaElement, index) => {
+      init();
+      inputs[index] = new InputNode(ctx, element);
+      return inputs[indx];
+    },
+  };
+})();
+
+window.audioCtx = gAudioContext;
 // window.onclick = function () {
 //   if (!window.g_audioCtx) {
 //     audioCtx();

@@ -14,7 +14,7 @@ class MyDocument extends Document {
           <Main />
           <NextScript />
           <div id="debug"></div>
-          <script type="module" src="index.js"></script>
+          <script type="module" src="./gaudio.js"></script>
         </body>
       </Html>
     );

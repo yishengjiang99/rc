@@ -3,6 +3,8 @@ import Slider from "@material-ui/core/Slider";
 import { Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { useState, Fragment } from "react";
+import NoSsr from "@material-ui/core/NoSsr";
+
 const useStyles = makeStyles({
   root: {
     width: 300,
@@ -32,7 +34,6 @@ const EnvelopConfig = ({ defaults, onInput }) => {
               {attribute}: {adsr[attribute]}
             </Typography>
             <Slider
-              className={classes.root}
               key={`${attribute}-slider`}
               getAriaValueText={`${attribute}-slider-label`}
               defaultValue={defaults[attribute]}
@@ -54,3 +55,38 @@ const EnvelopConfig = ({ defaults, onInput }) => {
 
 // const attributeSlider = ( attribute, defaults )=>
 export default EnvelopConfig;
+
+export const ParamConfig = ({
+  param,
+  defaultVal,
+  min,
+  max,
+  onInput,
+  step,
+
+  disabled,
+}) => {
+  const [val, setVal] = useState(1);
+
+  return (
+    <NoSsr>
+      <Typography key={`${param}-slider-label`} id={`${param}-slider-label`}>
+        {param}: {val}
+      </Typography>
+      <Slider
+        // disabled={disabled}
+        key={`${param}-slider`}
+        getAriaValueText={`${param}-slider-label`}
+        value={val}
+        onChange={(e, v) => {
+          setVal(v);
+          if (onInput) onInput(e, v);
+        }}
+        min={min || 0}
+        max={max || 10}
+        step={step || 0.01}
+        getAriaValueText={valuetext}
+      ></Slider>
+    </NoSsr>
+  );
+};

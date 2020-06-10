@@ -9,8 +9,10 @@ import {
   Button,
   ButtonGroup,
   IconButton,
+  Slider,
 } from "@material-ui/core";
 import Select from "react-select";
+import { ParamConfig } from "./envelop-config";
 
 const defaultSound = {
   value: "/sound/song.mp3",
@@ -30,24 +32,47 @@ function chunk(array, size) {
 }
 const BgSound = ({ src, userTriggered, index }) => {
   const [inputNode, setInputNode] = useState(null);
+  // const [userTriggered, setUserTriggered] = useState(_userTriggered);
   const [audioCtx, setAudioCtx] = useState(null);
   const audioRef = useRef(null);
 
   useEffect(() => {
-    if (!audioCtx) {
-      if (userTriggered) setAudioCtx(window.audioCtx());
-    } else if (!inputNode) {
-      if (audioRef.current) {
-        const node = audioCtx.elementInput(audioRef.current, index);
-        setInputNode(node);
-      }
-    } else if (userTriggered) {
+    if (!audioCtx && userTriggered) {
+      setAudioCtx(window.audioCtx);
+      window.audioCtx.init();
+    }
+
+    if (!inputNode && audioCtx && audioRef.current) {
+      const node = audioCtx.setAudioTag(audioRef.current);
+      debugger;
+      setInputNode(node);
+    }
+
+    if (audioCtx && inputNode) {
       audioRef.current.oncanplay = function (e) {
         e.target.play();
       };
     }
   });
-  return <audio ref={audioRef} src={src} controls />;
+  return (
+    <>
+      <audio ref={audioRef} src={src} controls />
+      {inputNode !== null ? (
+        <ParamConfig
+          disabled={inputNode !== null}
+          param={"volume"}
+          onInput={(e, v) => {
+            debugger;
+            if (!userTriggered) setUserTriggered(true);
+            inputNode.gain.gain.setValueAtTime(
+              v,
+              inputNode.inputNode.context.currentTime
+            );
+          }}
+        />
+      ) : null}
+    </>
+  );
 };
 function basename(path) {
   if (!path) return "";
@@ -65,6 +90,7 @@ const Playlist = (props) => {
     const fetchSounds = async () => {
       const soundsJson = await fetch(apiUrl);
       const soundsArray = await soundsJson.json(); //.then((res) => res.json());
+      soundsArray.sort((a, b) => a.charAt(a.length - 4));
       setSounds(soundsArray);
     };
     if (!sounds) fetchSounds();
@@ -73,18 +99,19 @@ const Playlist = (props) => {
   const soundButtons = (sounds) => {
     return (
       <>
-        {chunk(sounds, 3).map((chk) => {
+        {chunk(sounds, 3).map((chk, j) => {
           return (
-            <div>
+            <div key={j}>
               <ButtonGroup
                 display="block"
                 size="large"
                 color="primary"
                 aria-label="large outlined primary button group"
               >
-                {chk.map((sound) => {
+                {chk.map((sound, i) => {
                   return (
                     <Button
+                      key={i}
                       onClick={(e) => {
                         setUserTriggered(true);
                         setNowPlaying(sound);
@@ -110,9 +137,9 @@ const Playlist = (props) => {
         }}
       >
         {sounds &&
-          sounds.map((url) => {
+          sounds.map((url, i) => {
             return (
-              <option key={url} value={url}>
+              <option key={i} value={url}>
                 {basename(url)}
               </option>
             );

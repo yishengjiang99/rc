@@ -47,20 +47,29 @@ export class PianoKeyboard extends HTMLElement {
   }
 
   static get observedAttributes() {
-    return ["attack", "release", "decay", "sustain", "params", "waveshaper"];
+    return [
+      "attack",
+      "release",
+      "decay",
+      "sustain",
+      "params",
+      "waveshaper",
+      "onNote",
+      "onNoteOff",
+    ];
   }
 
   constructor() {
     super();
     this.asdr = {
-      attack: 0.01,
+      attack: 0.05,
       decay: 0.05,
       sustain: 0.1,
       release: 0.01, //0.01
     };
     this.params = {
       min: 0,
-      max: 4,
+      max: 3,
       octave: 2,
     };
     this.waveshaper = waveShaper;
@@ -117,8 +126,11 @@ export class PianoKeyboard extends HTMLElement {
         self.adsrs[note] = self._getNote(note);
       }
       if (e.repeat) {
+        window.postMessage({ hold: note });
         self.adsrs[note].hold(self.ctx.currentTime);
       } else {
+        window.postMessage({ trigger: note });
+
         self.adsrs[note].trigger(self.ctx.currentTime);
       }
     };
@@ -130,6 +142,7 @@ export class PianoKeyboard extends HTMLElement {
 
         self.adsrs[note] &&
           self.adsrs[note].triggerRelease(self.ctx.currentTime);
+        window.postMessage({ release: note });
       }
     };
   }
@@ -167,7 +180,7 @@ export class PianoKeyboard extends HTMLElement {
     const { min, max } = this.params;
     var freq_multiplier = freqmultiplierindex[this.params.octave];
 
-    var offfreq_attenuator = new GainNode(ctx, { gain: 1 });
+    var offfreq_attenuator = new GainNode(ctx, { gain: 0.1 });
     var osc1 = ctx.createOscillator();
 
     osc1.frequency.value = note * freq_multiplier;

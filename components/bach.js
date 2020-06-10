@@ -1,7 +1,6 @@
-import EnvelopConfig from "../components/envelop-config";
+import EnvelopConfig from "./envelop-config";
 import Head from "next/head";
 import { useState } from "react";
-import Layout, { siteTitle } from "../components/layout";
 import {
   Card,
   Collapse,
@@ -36,13 +35,16 @@ export default function Bach(props) {
 
         <script type="module" src="/keyboard/piano.js"></script>
       </Head>
-
-      <EnvelopConfig
-        style={{ maxWidth: "200px" }}
-        defaults={settings.envelope}
-        onInput={updateAttribute}
-      ></EnvelopConfig>
+      <details>
+        <summary>AM ADSR</summary>
+        <EnvelopConfig
+          style={{ maxWidth: "200px" }}
+          defaults={settings.envelope}
+          onInput={updateAttribute}
+        ></EnvelopConfig>
+      </details>
       <piano-keyboard
+        onNote={props.onNote}
         attack={settings.envelope.attack}
         release={settings.envelope.release}
         decay={settings.envelope.decay}

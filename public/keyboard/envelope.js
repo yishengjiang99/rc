@@ -16,7 +16,6 @@ export default function Envelope(
   this.decay = decay;
   this.param = param;
 }
-const _console = window._console || console;
 Envelope.prototype.trigger = function (time) {
   this.attackTime = time + this.attack; //reach attach val at attackTime
   this.decayTime = time + this.attack + this.decay; //reach decay val at decayTime

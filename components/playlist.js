@@ -44,7 +44,6 @@ const BgSound = ({ src, userTriggered, index }) => {
 
     if (!inputNode && audioCtx && audioRef.current) {
       const node = audioCtx.setAudioTag(audioRef.current);
-      debugger;
       setInputNode(node);
     }
 
@@ -62,7 +61,6 @@ const BgSound = ({ src, userTriggered, index }) => {
           disabled={inputNode !== null}
           param={"volume"}
           onInput={(e, v) => {
-            debugger;
             if (!userTriggered) setUserTriggered(true);
             inputNode.gain.gain.setValueAtTime(
               v,
@@ -81,7 +79,7 @@ function basename(path) {
 }
 const Playlist = (props) => {
   const apiUrl = props.api || "/api/fs/sound";
-  const [sounds, setSounds] = useState(null);
+  const [sounds, setSounds] = useState(props.files || null);
   const [userTriggered, setUserTriggered] = useState(false);
   const [nowPlaying, setNowPlaying] = useState("/sound/song.mp3");
   const [bufferState, setBufferState] = useState("UNSENT");
@@ -99,15 +97,10 @@ const Playlist = (props) => {
   const soundButtons = (sounds) => {
     return (
       <>
-        {chunk(sounds, 3).map((chk, j) => {
+        {chunk(sounds, 7).map((chk, j) => {
           return (
             <div key={j}>
-              <ButtonGroup
-                display="block"
-                size="large"
-                color="primary"
-                aria-label="large outlined primary button group"
-              >
+              <ButtonGroup>
                 {chk.map((sound, i) => {
                   return (
                     <Button
@@ -168,7 +161,3 @@ const Playlist = (props) => {
 };
 
 export default Playlist;
-// export const Playlist = dynamic(
-//   ()=>_Playlist,
-//   {ssr:false}
-// }

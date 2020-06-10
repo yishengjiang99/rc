@@ -1,5 +1,6 @@
 import styles from "./sequence.module.css";
 import React from "react";
+import {}
 import { useState, useEffect } from "react";
 const notes = [
   261.63,
@@ -72,7 +73,7 @@ const Sequence = ({ rows, cols }) => {
     };
   });
   const grids = [];
-  for (let i = 0; i < rows; i++) {
+  for (let i = rows - 1; i >= 0; i--) {
     for (let j = 0; j < cols; j++) {
       const barKey = (j + barCursor) * rows + i;
 
@@ -80,7 +81,7 @@ const Sequence = ({ rows, cols }) => {
         <div
           key={barKey}
           className={`${styles.gridItem} ${track[barKey] ? styles.noteOn : ""}`}
-          style={{ gridRow: i + 1, gridColumn: j + 1 }}
+          // style={{ gridRow: i + 1, gridColumn: j + 1 }}
         ></div>
       );
     }

@@ -50,6 +50,10 @@ export default function Bach(props) {
         decay={settings.envelope.decay}
         sustain={settings.envelope.sustain}
       ></piano-keyboard>
+      <details>
+        <summary>Console</summary>
+        <console id="console"></console>
+      </details>
     </>
   );
 }

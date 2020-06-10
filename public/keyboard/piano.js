@@ -27,9 +27,11 @@ const notes = [
 const isblack = (key) => ["w", "e", "t", "y", "u"].indexOf(key) >= 0;
 
 const freqmultiplierindex = [0, 0.25, 0.5, 1, 2, 4];
-const css = `:host{box-sizing:border-box;padding:5px;max-width:100vw} 
-ul{height:18.875em;width:80em;margin:5em auto;padding:2em 0 0 2em;position:relative;border:1px solid #160801;border-radius:1em;background:black} 
-li{margin:0;padding:0;list-style:none;position:relative;float:left} ul .white{height:16em;width:3.8em;z-index:1;border-left:1px solid #bbb;border-bottom:1px solid #bbb;border-radius:0 0 5px 5px;box-shadow:-1px 0 0 rgba(255,255,255,.8) inset,0 0 5px #ccc inset,0 0 3px rgba(0,0,0,.2);background:linear-gradient(to bottom,#eee 0,#fff 100%);margin:0 0 0 -1em}
+const css = `:host{box-sizing:border-box;max-width:100vw} 
+ul{height:12em;width:80em; position:relative;border:1px solid #160801;border-radius:1em;
+  background:black} 
+li{margin:0;padding:0;list-style:none;position:relative;float:left} 
+ul .white{height:12em;width:3.8em;z-index:1;border-left:1px solid #bbb;border-bottom:1px solid #bbb;border-radius:0 0 5px 5px;box-shadow:-1px 0 0 rgba(255,255,255,.8) inset,0 0 5px #ccc inset,0 0 3px rgba(0,0,0,.2);background:linear-gradient(to bottom,#eee 0,#fff 100%);margin:0 0 0 -1em}
 ul .white:active{border-top:1px solid #777;border-left:1px solid #999;border-bottom:1px solid #999;box-shadow:2px 0 3px rgba(0,0,0,.1) inset,-5px 5px 20px rgba(0,0,0,.2) inset,0 0 3px rgba(0,0,0,.2);background:linear-gradient(to bottom,#fff 0,#e9e9e9 100%)}
 ul .white.pressed{border-top:1px solid #777;border-left:1px solid #999;border-bottom:1px solid #999;box-shadow:2px 0 3px rgba(0,0,0,.1) inset,-5px 5px 20px rgba(0,0,0,.2) inset,0 0 3px rgba(0,0,0,.2);background:linear-gradient(to bottom,#fff 0,#e9e9e9 100%)}
 .black{height:8em;width:2em;margin:0 0 0 -1em;z-index:2;border:1px solid #000;border-radius:0 0 3px 3px;box-shadow:-1px -1px 2px rgba(255,255,255,.2) inset,0 -5px 2px 3px rgba(0,0,0,.6) inset,0 2px 4px rgba(0,0,0,.5);background:linear-gradient(45deg,#222 0,#555 100%)}
@@ -92,9 +94,9 @@ export class PianoKeyboard extends HTMLElement {
     });
     this.shadowRoot.appendChild(list); // += "</ul>";
 
-    this.shadowRoot.innerHTML += `<div id='rx'>${JSON.stringify(
-      this.asdr
-    )}</div>`;
+    // this.shadowRoot.innerHTML += `<div id='rx'>${JSON.stringify(
+    //   this.asdr
+    // )}</div>`;
     this.rx = this.shadowRoot.getElementById("rx");
   }
 

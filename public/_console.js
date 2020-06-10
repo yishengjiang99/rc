@@ -1,7 +1,7 @@
-const _console = (function () {
+const Console = function () {
   const debug = window.location.hash.substring(1).startsWith("debug");
 
-  var div = document.getElementById("rx1");
+  var div = document.getElementById("console");
   //   if (!div) {
   //   }
   //   div =
@@ -19,6 +19,10 @@ const _console = (function () {
 
   return {
     log: function (str) {
+      if (typeof str === "object") {
+        _console.log(JSON.stringify(str));
+        return;
+      }
       if (debug) {
         var c = position % 10;
         buffer[c] = "<br>" + str;
@@ -27,4 +31,6 @@ const _console = (function () {
       }
     },
   };
-})();
+};
+
+window.onload = () => (window._console = Console());

@@ -9,6 +9,7 @@ import {
   ChardContent,
   IconButton,
 } from "@material-ui/core";
+// import "../public/keyboard/piano.js";
 export default function Bach(props) {
   const [settings, setSettings] = useState({
     envelope: {
@@ -31,8 +32,6 @@ export default function Bach(props) {
   return (
     <>
       <Head>
-        <script type="application/javascript" src="/_console.js"></script>
-
         <script type="module" src="/keyboard/piano.js"></script>
       </Head>
       <details>
@@ -52,7 +51,7 @@ export default function Bach(props) {
       ></piano-keyboard>
       <details>
         <summary>Console</summary>
-        <console id="console"></console>
+        <div id="console"></div>
       </details>
     </>
   );

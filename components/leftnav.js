@@ -37,7 +37,12 @@ const LeftNav = ({ children }) => {
       >
         <MenuIcon />
       </IconButton>
-      <Drawer variant="persistent" anchor="left" open={open}>
+      <Drawer
+        style={{ width: 280 }}
+        variant="persistent"
+        anchor="left"
+        open={open}
+      >
         <IconButton onClick={handleDrawerClose}>
           <ChevronLeftIcon />
         </IconButton>

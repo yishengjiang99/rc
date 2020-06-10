@@ -1,6 +1,6 @@
-import Playlist from "../components/Playlist";
-import Sequence from "../components/Sequence";
-import Bach from "../components/Bach";
+import Playlist from "../components/playlist";
+import Sequence from "../components/sequence";
+import Bach from "../components/bach";
 import LeftNav from "../components/LeftNav";
 import NoSsr from "@material-ui/core/NoSsr";
 import { Container } from "@material-ui/core";

@@ -77,7 +77,7 @@ const BgSound = ({ src, userTriggered, index }) => {
 function basename(path) {
   if (!path) return "";
   var t = path.split("/");
-  return t[t.length - 1].split(" - ")[0];
+  return t[t.length - 1].substring(0, 20);
 }
 const Playlist = (props) => {
   const apiUrl = props.api || "/api/fs/sound";

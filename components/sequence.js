@@ -1,6 +1,11 @@
 import styles from "./sequence.module.css";
 import React from "react";
-import { FastRewind, FastForward, PlayArrow, Pause } from "@material-ui/icons";
+import {
+  FastRewind,
+  FastForward,
+  PlayCircleFilledSharp,
+  PauseCircleFilledSharp,
+} from "@material-ui/icons";
 import { IconButton, Toolbar } from "@material-ui/core";
 import { useState, useEffect, useRef } from "react";
 const notes = [
@@ -36,66 +41,31 @@ const Sequence = ({ rows, cols }) => {
   const [litKeys, setLitKeys] = useState({});
   var updateTimer;
   const toolbarRef = useRef();
-  const startTimer = function (reset) {
-    if (reset) {
-      setT(0);
-      setStart(new Date().getTime());
-      setRunning(true);
-      cancelAnimationFrame(updateTimer);
-    }
-    var _bar = 0;
-    const interval = 60000 / bpm / 4;
+  // const startTimer = function (reset) {
+  //   if (reset) {
+  //     setT(0);
+  //     setStart(new Date().getTime());
+  //     setRunning(true);
+  //     cancelAnimationFrame(updateTimer);
+  //   }
+  //   var _bar = 0;
+  //   const interval = 60000 / bpm / 4;
 
-    const playBeat = () => {
-      if (track[_bar]) {
-        window.postMessage({ source: "sequence", triggerAttack: track[_bar] });
-      }
-      _bar++;
-      setTimeout(playBear, interval);
-    };
-
-    setTimeout(function () {}, 60000 / bpm / 4);
-
-    var update = () => {
-      updateTimer = requestAnimationFrame(() => {
-        const now = new Date().getTime();
-        const time = (now - start) / 1000;
-
-        const bar = Math.floor((time / 60) * bpm * 4); // / (bpm * 60)) * 4);
-        console.log("am frame " + time, bar);
-
-        if (bar !== t) setT(bar);
-        if (bar - barCursor >= cols) {
-          setBarCursor(barCursor + cols);
-        }
-        if (playbackState == PlaybackStateEnum.playing) {
-          var notes = track[bar] || [];
-          notes.forEach((note) => {
-            // litKeys[bar] = 1;
-            window.postMessage({ source: "sequence", triggerAttack: note });
-          });
-          // Object.keys(litKeys).forEach((key) => {
-          //   if (track[bar].indexOf(key) < 0) {
-          //     window.postMessage({ source: "sequence", triggerRelease: key });
-          //   }
-          // });
-          setLitKeys(track[bar]);
-        }
-        update();
-      });
-    };
-    update();
-  };
+  //   const playBeat = () => {
+  //     if (track[_bar]) {
+  //       window.postMessage({ source: "sequence", triggerAttack: track[_bar] });
+  //     }
+  //     _bar++;
+  //     setTimeout(playBear, interval);
+  //   };
+  //   playBeat();
+  // };
 
   const pushNote = (note) => {
     if (playbackState === PlaybackStateEnum.playing) {
       setMsg("cannot push note during playback");
       return;
     }
-    // if (!running) {
-    //   startTimer();
-    // }
-
     const noteIndex = notes.indexOf(note);
     setMsg(`push ${t} with ${noteIndex}`);
     track[t] = track[t] || [];
@@ -113,18 +83,10 @@ const Sequence = ({ rows, cols }) => {
     cancelAnimationFrame(updateTimer);
   };
   const playback = () => {
+    window.postMessage({ triggerAttackRelease: track, source: "sequence" });
     setPlaybackState(PlaybackStateEnum.playing);
-    startTimer(true);
-    // var b = 0;
-
-    // for (const _bar in track) {
-    //   const bars = track[_bar];
-    //   if (bars) {
-    //     window.postMessage({ triggerAttackRelease: bars, source: "sequence" });
-    //   }
-    //   await sleep( 60000/bpm/4);
-    // }
   };
+
   useEffect(() => {
     window.onmessage = (e) => {
       var msg = e.data;
@@ -152,7 +114,19 @@ const Sequence = ({ rows, cols }) => {
       const className = keyLit
         ? `${styles.gridItem} ${styles.noteOn}`
         : styles.gridItem;
-      grids.push(<div key={j * cols + i} className={className}></div>);
+      grids.push(
+        <div
+          onClick={(e) => {
+            var bars = track[j + barCursor] || [];
+            keyLit ? bars.splice(bars.indexOf(i), 1) : bars.push(i);
+            track[j + barCursor] = bars;
+            setTrack(track);
+            setMsg("update" + (j * cols + i));
+          }}
+          key={j * cols + i}
+          className={className}
+        ></div>
+      );
     }
   }
   return (
@@ -161,12 +135,15 @@ const Sequence = ({ rows, cols }) => {
         <IconButton>
           <FastRewind />
         </IconButton>
-        <IconButton onClick={() => pauseTimer()}>
-          <Pause />
-        </IconButton>
-        <IconButton onClick={() => playback()}>
-          <PlayArrow />
-        </IconButton>
+        {playbackState === PlaybackStateEnum.playing ? (
+          <IconButton onClick={() => pauseTimer()}>
+            <PauseCircleFilledSharp />
+          </IconButton>
+        ) : (
+          <IconButton onClick={() => playback()}>
+            <PlayCircleFilledSharp />
+          </IconButton>
+        )}
         <IconButton>
           <FastForward />
         </IconButton>

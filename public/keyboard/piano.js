@@ -85,9 +85,9 @@ export class PianoKeyboard extends HTMLElement {
       class="${isblack(key) ? "black" : "white"}"> ${key}</li>`;
     }
     this.attachShadow({ mode: "open" });
-    this.shadowRoot.innerHTML = `<style>${css}</style>`;
+    this.shadowRoot.innerHTML = `<style>${css}</style><div id=rx></div>`;
     const list = document.createElement("ul");
-    [2, 3, 4].forEach((octave) => {
+    [3, 4].forEach((octave) => {
       keys.forEach((key, index) => {
         list.innerHTML += _key(notes[index] * freqmultiplierindex[octave], key);
       });

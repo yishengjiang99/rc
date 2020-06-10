@@ -1,6 +1,7 @@
 import Playlist from "../components/playlist";
 import Sequence from "../components/sequence";
 import Bach from "../components/bach";
+import NoSsr from "@material-ui/core/NoSsr";
 import { Container } from "@material-ui/core";
 import { ls } from "../lib/posts";
 

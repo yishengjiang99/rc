@@ -3,6 +3,8 @@ import LeftNav from "../components/leftnav";
 import Bach from "../components/bach";
 import { Container } from "@material-ui/core";
 import Sequence from "../components/sequence";
+import NoSsr from "@material-ui/core/NoSsr";
+
 const PlayListNoSsr = dynamic(() => import("../components/playlist"), {
   loading: () => <p>Loading ...</p>,
   ssr: false,
@@ -20,7 +22,7 @@ export default function indexPage(props) {
   };
 
   return (
-    <>
+    <NoSsr>
       <LeftNav>
         <PlayListNoSsr api="/api/fs/sound" />;
         <PlayListNoSsr api="/api/fs/sound/notes" mode="buttons" />;
@@ -29,6 +31,6 @@ export default function indexPage(props) {
         <Sequence rows={12} cols={20} />
         <Bach />
       </Container>
-    </>
+    </NoSsr>
   );
 }

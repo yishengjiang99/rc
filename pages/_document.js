@@ -9,11 +9,12 @@ class MyDocument extends Document {
   render() {
     return (
       <Html>
-        <Head></Head>
+        <Head>
+          <script type="module" src="./gaudio.js"></script>
+        </Head>
         <body>
           <Main />
           <NextScript />
-          <script type="module" src="./gaudio.js"></script>
         </body>
       </Html>
     );

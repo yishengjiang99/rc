@@ -10,7 +10,7 @@ class InputNode {
   }
 }
 
-const gAudioContext = (function kAudioContext() {
+export function kAudioContext() {
   var ctx, inputs, inputMasterGain;
   inputs = Array(10);
   function init() {
@@ -28,11 +28,14 @@ const gAudioContext = (function kAudioContext() {
       return inputs[index];
     },
   };
-})();
+}
+// var gAudioContext;
+// // typeof window !== "undefined" && gAudioContext = kAudioContext();
 
-window.audioCtx = gAudioContext;
-// window.onclick = function () {
-//   if (!window.g_audioCtx) {
-//     audioCtx();
-//   }
-// };
+// document &&
+//   window.addEventListener("click", function () {
+//     if (gAudioContext !== null) return;
+//     else {
+//       gAudioContext = kAudioContext();
+//     }
+//   });

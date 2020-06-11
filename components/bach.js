@@ -1,6 +1,9 @@
 import EnvelopConfig from "./envelop-config";
 import Head from "next/head";
 import { useState } from "react";
+import { OSC3, Envelope } from "../lib/synth";
+import { PianoKeys } from "../components/keyboard";
+
 import {
   Card,
   Collapse,
@@ -8,6 +11,7 @@ import {
   CardHeader,
   ChardContent,
   IconButton,
+  Box,
 } from "@material-ui/core";
 // import "../public/keyboard/piano.js";
 export default function Bach(props) {
@@ -31,9 +35,6 @@ export default function Bach(props) {
   }
   return (
     <>
-      <Head>
-        <script type="module" src="/keyboard/piano.js"></script>
-      </Head>
       <details>
         <summary>AM ADSR</summary>
         <EnvelopConfig
@@ -42,17 +43,12 @@ export default function Bach(props) {
           onInput={updateAttribute}
         ></EnvelopConfig>
       </details>
-      <piano-keyboard
-        onNote={props.onNote}
+      <PianoKeys
         attack={settings.envelope.attack}
         release={settings.envelope.release}
         decay={settings.envelope.decay}
         sustain={settings.envelope.sustain}
-      ></piano-keyboard>
-      <details>
-        <summary>Console</summary>
-        <div id="console"></div>
-      </details>
+      ></PianoKeys>
     </>
   );
 }

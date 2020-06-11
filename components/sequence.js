@@ -41,25 +41,6 @@ const Sequence = ({ rows, cols }) => {
   const [litKeys, setLitKeys] = useState({});
   var updateTimer;
   const toolbarRef = useRef();
-  // const startTimer = function (reset) {
-  //   if (reset) {
-  //     setT(0);
-  //     setStart(new Date().getTime());
-  //     setRunning(true);
-  //     cancelAnimationFrame(updateTimer);
-  //   }
-  //   var _bar = 0;
-  //   const interval = 60000 / bpm / 4;
-
-  //   const playBeat = () => {
-  //     if (track[_bar]) {
-  //       window.postMessage({ source: "sequence", triggerAttack: track[_bar] });
-  //     }
-  //     _bar++;
-  //     setTimeout(playBear, interval);
-  //   };
-  //   playBeat();
-  // };
 
   const pushNote = (note) => {
     if (playbackState === PlaybackStateEnum.playing) {

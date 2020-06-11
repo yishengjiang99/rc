@@ -4,6 +4,7 @@ import Bach from "../components/bach";
 import NoSsr from "@material-ui/core/NoSsr";
 import { Container } from "@material-ui/core";
 import { ls } from "../lib/posts";
+
 //trigger update
 export default function indexPage(props) {
   return (

@@ -1,8 +1,7 @@
 /* eslint-disable no-debugger */
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-undef */
-import Envelope from "./envelope.js";
-import { Piano } from "./waves.js";
+
 const keys = ["a", "w", "s", "e", "d", "f", "t", "g", "y", "h", "u", "j"];
 
 const regularNotes = "261.63, 293.66 , 329.63, 349.23, 392.00, 440.00, 493.88".split(
@@ -44,7 +43,7 @@ ul .white.pressed{border-top:1px solid #777;border-left:1px solid #999;border-bo
 .black:active{box-shadow:-1px -1px 2px rgba(255,255,255,.2) inset,0 -2px 2px 3px rgba(0,0,0,.6) inset,0 1px 2px rgba(0,0,0,.5);background:linear-gradient(to right,#444 0,#222 100%)}.a,.c,.d,.f,.g{margin:0 0 0 -1em}ul li:first-child{border-radius:5px 0 5px 5px}ul li:last-child{border-radius:0 5px 5px 5px}
 .black.pressed{box-shadow:-1px -1px 2px rgba(255,255,255,.2) inset,0 -2px 2px 3px rgba(0,0,0,.6) inset,0 1px 2px rgba(0,0,0,.5);background:linear-gradient(to right,#444 0,#222 100%)}.a,.c,.d,.f,.g{margin:0 0 0 -1em}ul li:first-child{border-radius:5px 0 5px 5px}ul li:last-child{border-radius:0 5px 5px 5px}`;
 
-const waveShaper = JSON.parse(Piano);
+// const waveShaper = hoistingPiano();
 
 export class PianoKeyboard extends HTMLElement {
   static get attack() {
@@ -70,17 +69,17 @@ export class PianoKeyboard extends HTMLElement {
   constructor() {
     super();
     this.asdr = {
-      attack: 0.05,
-      decay: 0.05,
-      sustain: 0.1,
-      release: 0.01, //0.01
+      attack: 0.02,
+      decay: 0.04,
+      sustain: 0.4,
+      release: 0.5, //0.01
     };
     this.params = {
       min: 0,
       max: 2,
       octave: 2,
     };
-    this.waveshaper = waveShaper;
+    this.waveshaper = null;
     this.keyDomelements = {};
     this.adsrs = {};
     this.initialized = false;
@@ -148,6 +147,15 @@ export class PianoKeyboard extends HTMLElement {
         self.adsrs[note] &&
           self.adsrs[note].triggerRelease(self.ctx.currentTime);
         window.postMessage({ release: note });
+      }
+    };
+
+    window.onmessage = function (e) {
+      const msg = e.data;
+      if (msg.trigger && msg.note) {
+        (self.adsrs[msg.note] || self._getNote(notes[msg.note])).trigger(
+          self.ctx.currentTime
+        );
       }
     };
   }
@@ -223,3 +231,50 @@ export class PianoKeyboard extends HTMLElement {
 }
 
 window.customElements.define("piano-keyboard", PianoKeyboard);
+
+export function Envelope(min, max, attack, decay, sustain, release, param) {
+  this.min = min; //
+  this.max = max;
+  this.sustainLevel = this.max * sustain;
+  this.attack = attack;
+  this.release = release;
+  this.releaseTimeConstant = 0.5 * release;
+  this.decay = decay;
+  this.param = param;
+}
+Envelope.prototype.trigger = async function (time) {
+  this.attackTime = time + this.attack; //reach attach val at attackTime
+  this.decayTime = time + this.attack + this.decay; //reach decay val at decayTime
+  this.param.cancelScheduledValues(time);
+  this.param.setValueAtTime(0, time);
+  this.param.linearRampToValueAtTime(this.max, time + this.attack);
+  await sleep(this.attack - 0.001);
+  this.param.linearRampToValueAtTime(
+    this.sustainLevel,
+    time + this.attack + this.decay
+  );
+  await sleep(this.decay);
+  this.param.setTargetAtTime(0.001, this.decayTime, this.release);
+};
+Envelope.prototype.hold = function (time) {
+  this.param.cancelAndHoldAtTime(time + this.attack + this.decay);
+};
+
+Envelope.prototype.triggerRelease = async function (time) {
+  this.param.cancelScheduledValues(time);
+  let extraWait = 0;
+  if (time < this.attackTime) {
+    await sleep(this.attackTime - time);
+    extraWait = this.attackTime - time;
+  }
+
+  this.param.setTargetAtTime(
+    0.000001,
+    time + extraWait,
+    this.release + extraWait
+  );
+};
+
+function sleep(sec) {
+  return new Promise((resolve) => setTimeout(resolve, sec * 1000));
+}

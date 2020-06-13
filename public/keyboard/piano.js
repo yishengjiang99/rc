@@ -35,7 +35,7 @@ ul{
   background:black
   max-width:80em;
 } 
-li {margin:0;padding:0;list-style:none;position:relative;float:left} 
+li .key{margin:0;padding:0;list-style:none;position:relative;float:left} 
 ul .white{height:12em;width:3.2em;z-index:1;border-left:1px solid #bbb;border-bottom:1px solid #bbb;border-radius:0 0 5px 5px;box-shadow:-1px 0 0 rgba(255,255,255,.8) inset,0 0 5px #ccc inset,0 0 3px rgba(0,0,0,.2);background:linear-gradient(to bottom,#eee 0,#fff 100%);margin:0 0 0 -1em}
 ul .white:active{border-top:1px solid #777;border-left:1px solid #999;border-bottom:1px solid #999;box-shadow:2px 0 3px rgba(0,0,0,.1) inset,-5px 5px 20px rgba(0,0,0,.2) inset,0 0 3px rgba(0,0,0,.2);background:linear-gradient(to bottom,#fff 0,#e9e9e9 100%)}
 ul .white.pressed{border-top:1px solid #777;border-left:1px solid #999;border-bottom:1px solid #999;box-shadow:2px 0 3px rgba(0,0,0,.1) inset,-5px 5px 20px rgba(0,0,0,.2) inset,0 0 3px rgba(0,0,0,.2);background:linear-gradient(to bottom,#fff 0,#e9e9e9 100%)}
@@ -76,8 +76,8 @@ export class PianoKeyboard extends HTMLElement {
     };
     this.params = {
       min: 0,
-      max: 2,
-      octave: 2,
+      max: 1,
+      octave: 3,
     };
     this.waveshaper = null;
     this.keyDomelements = {};
@@ -123,6 +123,7 @@ export class PianoKeyboard extends HTMLElement {
 
     window.onkeydown = function (e) {
       const index = keys.indexOf(e.key);
+
       if (index < 0) return;
       const note = notes[index];
       self.shadowRoot.getElementById(note).classList.toggle("pressed");

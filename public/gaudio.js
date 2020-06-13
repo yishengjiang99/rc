@@ -1,7 +1,6 @@
 class InputNode {
   constructor(ctx, audioNote) {
     this.inputNode = audioNote;
-    ctx.createMediaElementSource(audioMediaElement);
     this.gain = ctx.createGain(1);
     this.statusText = "";
     this.inputNode.connect(this.gain);
@@ -33,9 +32,9 @@ export function kAudioContext() {
       return inputs[index];
     },
     setPianoInput: (gainNode, index) => {
-      var effectChains = new Bus();
-      effectChains.attachSource(gainNode);
-      effectChains.connect(inputMasterGain);
+      // var effectChains = new Bus();
+      // effectChains.attachSource(gainNode);
+      // effectChains.connect(inputMasterGain);
       inputs[index] = gainNode;
       return inputs[index];
     },

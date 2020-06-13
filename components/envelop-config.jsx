@@ -13,7 +13,13 @@ const useStyles = makeStyles({
 function valuetext(value) {
   return `${value}`;
 }
-const EnvelopConfig = ({ defaults, onInput }) => {
+
+export const genericConfig = ({
+  defaults,
+  onInput,
+  attributes, //["attack", "decay", "sustain", "release"],
+}) => {
+  attributes = attributes || ["attack", "decay", "sustain", "release"];
   const classes = useStyles();
   const [adsr, setAdsr] = useState(defaults);
   const setValue = (attr, val) => {
@@ -24,7 +30,7 @@ const EnvelopConfig = ({ defaults, onInput }) => {
   };
   return (
     <div>
-      {["attack", "decay", "sustain", "release"].map((attribute) => {
+      {attributes.map((attribute) => {
         return (
           <Fragment key={attribute}>
             <Typography
@@ -52,7 +58,12 @@ const EnvelopConfig = ({ defaults, onInput }) => {
     </div>
   );
 };
-
+const EnvelopConfig = ({ defaults, onInput }) =>
+  genericConfig({
+    defaults,
+    onInput,
+    attributes: ["attack", "decay", "sustain", "release"],
+  });
 // const attributeSlider = ( attribute, defaults )=>
 export default EnvelopConfig;
 

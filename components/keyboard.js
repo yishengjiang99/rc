@@ -38,7 +38,7 @@ export const PianoKeys = ({ harmonicGains, fromTop, onNotePlayed }) => {
 
   const releasePressedKey = (index) => {
     pressedKeys[index].triggerReleasse();
-    setPressedKey({ ...pressedKeys, index: null });
+    setPressedKeys({ ...pressedKeys, index: null });
   };
   var keylist = [];
 

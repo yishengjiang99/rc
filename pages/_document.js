@@ -15,7 +15,6 @@ class MyDocument extends Document {
         <body>
           <Main />
           <NextScript />
-          <script type="module" src="./gaudio.js"></script>
           <div id="console">loading console</div>
           <script type="module" src="./_console.js"></script>
         </body>

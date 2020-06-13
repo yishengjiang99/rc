@@ -1,5 +1,3 @@
-import Bus from "../lib/Bus";
-
 class InputNode {
   constructor(ctx, audioNote) {
     this.inputNode = audioNote;

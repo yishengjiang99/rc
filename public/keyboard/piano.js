@@ -185,6 +185,9 @@ export class PianoKeyboard extends HTMLElement {
     this.ctx = this.ctx || window.g_audioCtx || new AudioContext();
     let ctx = this.ctx;
     this.masterGain = this.masterGain || new GainNode(this.ctx);
+    this.masterGain.connect(
+      new DynamicsCompressorNode(ctx, { threshold: -80 })
+    );
     this.masterGain.connect(ctx.destination);
     const { attack, decay, sustain, release } = this.asdr;
     const { min, max } = this.params;

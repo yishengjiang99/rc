@@ -10,7 +10,7 @@ class InputNode {
   }
 }
 
-export function c() {
+export function kAudioContext() {
   var ctx, inputs, inputMasterGain;
   inputs = Array(10);
 

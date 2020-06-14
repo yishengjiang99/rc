@@ -56,8 +56,7 @@ export class PianoKeyboard extends HTMLElement {
       "sustain",
       "params",
       "waveshaper",
-      "onNote",
-      "onNoteOff",
+      "trackDispatch",
     ];
   }
 
@@ -96,15 +95,21 @@ export class PianoKeyboard extends HTMLElement {
     this.shadowRoot.appendChild(list);
 
     this.rx = this.shadowRoot.getElementById("rx");
+    this.onNoteEvent = function () {
+      console.log("on note");
+    };
   }
 
   connectedCallback() {
+    this.ctx = this.ctx || window.g_audioCtx || new AudioContext();
+
     var self = this;
+
     this.shadowRoot.querySelectorAll("li").forEach((el) => {
       el.addEventListener("mousedown", (e) => {
         if (!e.target.dataset.note) return false;
         const note = parseFloat(e.target.dataset.note);
-        if (!self.adsrs[note]) {
+        if (!this.adsrs[note]) {
           self.adsrs[note] = self._getNote(note);
         }
         self.adsrs[note].trigger(self.ctx.currentTime);
@@ -117,46 +122,48 @@ export class PianoKeyboard extends HTMLElement {
       });
     });
 
-    window.onkeydown = function (e) {
-      const index = keys.indexOf(e.key);
+    window.onkeydown = this._onkeydown.bind(this);
+    window.onkeyup = this._onkeyup.bind(this);
+  }
+  _onkeydown(e) {
+    const index = keys.indexOf(e.key);
 
-      if (index < 0) return;
+    if (index < 0) return;
+    let self = this;
+    const note = notes[index];
+    this.shadowRoot.getElementById(note).classList.toggle("pressed");
+    if (!this.adsrs[note]) {
+      this.adsrs[note] = this._getNote(note);
+    }
+    if (e.repeat) {
+      this.onNoteEvent({
+        time: self.ctx.currentTime,
+        type: "hold",
+        noteIndex: note,
+      });
+
+      this.adsrs[note].hold(self.ctx.currentTime);
+    } else {
+      this.onNoteEvent({
+        time: self.ctx.currentTime,
+        type: "trigger",
+        noteIndex: note,
+      });
+      this.adsrs[note].trigger(self.ctx.currentTime);
+    }
+  }
+  _onkeyup(e) {
+    const index = keys.indexOf(e.key);
+    if (index > -1) {
       const note = notes[index];
-      self.shadowRoot.getElementById(note).classList.toggle("pressed");
-      if (!self.adsrs[note]) {
-        self.adsrs[note] = self._getNote(note);
-      }
-      if (e.repeat) {
-        window.postMessage({
-          time: self.ctx.currentTime,
-          evt: "hold",
-          note: note,
-        });
-        self.adsrs[note].hold(self.ctx.currentTime);
-      } else {
-        window.postMessage({
-          time: self.ctx.currentTime,
-          evt: "trigger",
-          note: note,
-        });
-        self.adsrs[note].trigger(self.ctx.currentTime);
-      }
-    };
-    window.onkeyup = function (e) {
-      const index = keys.indexOf(e.key);
-      if (index > -1) {
-        const note = notes[index];
-        self.shadowRoot.getElementById(note).classList.toggle("pressed");
-
-        self.adsrs[note] &&
-          self.adsrs[note].triggerRelease(self.ctx.currentTime);
-        window.postMessage({
-          time: self.ctx.currentTime,
-          evt: "release",
-          note: note,
-        });
-      }
-    };
+      this.shadowRoot.getElementById(note).classList.toggle("pressed");
+      this.adsrs[note] && this.adsrs[note].triggerRelease(this.ctx.currentTime);
+      this.onNoteEvent({
+        time: this.ctx.currentTime,
+        type: "release",
+        noteIndex: note,
+      });
+    }
   }
 
   attributeChangedCallback(name, oldval, newval) {
@@ -170,6 +177,11 @@ export class PianoKeyboard extends HTMLElement {
         this.rx.innerHTML = JSON.stringify(this.asdr, null, "1");
         this.adsrs = {};
 
+        break;
+      case "trackDispatch":
+        this.onNoteEvent = (e) => dispatch(e);
+        break;
+      default:
         break;
     }
   }
@@ -194,10 +206,9 @@ export class PianoKeyboard extends HTMLElement {
     this.ctx = this.ctx || window.g_audioCtx || new AudioContext();
     let ctx = this.ctx;
     this.masterGain = this.masterGain || new GainNode(this.ctx);
-    this.masterGain.connect(
-      new DynamicsCompressorNode(ctx, { threshold: -80 })
-    );
-    this.masterGain.connect(ctx.destination);
+    this.masterGain
+      .connect(new DynamicsCompressorNode(ctx, { threshold: -80 }))
+      .connect(ctx.destination);
     const { attack, decay, sustain, release } = this.asdr;
     const { min, max } = this.params;
     var freq_multiplier = freqmultiplierindex[this.params.octave];

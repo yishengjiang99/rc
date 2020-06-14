@@ -64,7 +64,6 @@ const Sequence = ({ rows, cols }) => {
     cancelAnimationFrame(updateTimer);
   };
   const playback = () => {
-    debugger;
     window.postMessage({
       evt: "triggerAttackRelease",
       track,

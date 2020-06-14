@@ -10,7 +10,7 @@ class InputNode {
   }
 }
 
-export function kAudioContext() {
+export function c() {
   var ctx, inputs, inputMasterGain;
   inputs = Array(10);
 
@@ -40,13 +40,3 @@ export function kAudioContext() {
     },
   };
 }
-// var gAudioContext;
-// // typeof window !== "undefined" && gAudioContext = kAudioContext();
-
-// document &&
-//   window.addEventListener("click", function () {
-//     if (gAudioContext !== null) return;
-//     else {
-//       gAudioContext = kAudioContext();
-//     }
-//   });

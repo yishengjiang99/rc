@@ -64,20 +64,25 @@ const Sequence = ({ rows, cols }) => {
     cancelAnimationFrame(updateTimer);
   };
   const playback = () => {
-    window.postMessage({ triggerAttackRelease: track, source: "sequence" });
+    debugger;
+    window.postMessage({
+      evt: "triggerAttackRelease",
+      track,
+      source: "sequence",
+    });
     setPlaybackState(PlaybackStateEnum.playing);
   };
 
   useEffect(() => {
     window.onmessage = (e) => {
-      var msg = e.data;
+      const { evt, note, time } = e.data;
 
-      if (msg.trigger) {
-        pushNote(msg.trigger);
-      } else if (msg.onNoteOff) {
-        _console.log(msg);
-      } else if (msg.onNoteHold) {
-        _console.log(msg);
+      if (evt === "trigger") {
+        pushNote(note);
+      } else if (evt === "release") {
+        //}.release) {
+      } else {
+        //placeholders
       }
     };
     // toolbarRef.current.style.display = "block";

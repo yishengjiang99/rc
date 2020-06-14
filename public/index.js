@@ -1,32 +1,35 @@
-class InputNode {
-  constructor(ctx, audioNode) {
-    this.inputNode = audioNode;
-    this.gain = ctx.createGain(1);
-    this.statusText = "";
-    this.inputNode.connect(gain);
-  }
-  connect(node) {
-    this.gain.disconnect();
-    this.gain.connect(node);
-  }
+import { PianoKeyboard } from "./keyboard/piano.js";
+import Envelope from "./keyboard/envelope.js";
+import Conductor from "./keyboard/conductor.js";
+import { kAudioContext } from "../gaudio.js";
+
+export { PianoKeyboard, Envelope };
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function () {
+    navigator.serviceWorker.register("/keyboard/ticker.js");
+  });
 }
+document.addEventListener("DOMContentLoaded", function (event) {
+  // Your code to run since DOM is loaded and ready
+  const ctx = kAudioContext().ctx;
+  const conductor = Conductor();
+  var ticker = new Worker("./ticker.js");
+  
+});
+var conductor = Conductor();
 
-const gAudioContext = (function kAudioContext() {
-  var ctx, inputs, inputMasterGain;
-  inputs = Array(10);
-  return {
-    init: () => (ctx = ctx || new AudioContext()),
-    setAudioTag: (audioMediaElement, index) => {
-      init();
-      inputs[index] = new InputNode(ctx, element);
-      return inputs[indx];
-    },
-  };
-})();
+window.onload = () => {
+  conductor = Conductor();
+  window.conductor = conductor;
+  const btn = document.getElementById("playbackBtn");
+  btn.onClick = () => conductor.playback();
+};
 
-window.audioCtx = gAudioContext;
-// window.onclick = function () {
-//   if (!window.g_audioCtx) {
-//     audioCtx();
-//   }
-// };
+window.onmessage = (e) => {
+  if (e.data.evt === "triggerAttackRelease") {
+    conductor.playback();
+  }
+};
+
+window.onmessage = (msg) => {};

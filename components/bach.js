@@ -1,4 +1,5 @@
 import EnvelopConfig from "./envelop-config";
+
 import Head from "next/head";
 import { useState } from "react";
 import { OSC3, Envelope } from "../lib/synth";

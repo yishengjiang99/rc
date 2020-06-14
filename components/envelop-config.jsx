@@ -48,7 +48,7 @@ export const genericConfig = ({
                 setValue(attribute, v);
               }}
               min={0}
-              max={3}
+              max={1}
               step={0.01}
               getAriaValueText={valuetext}
             ></Slider>

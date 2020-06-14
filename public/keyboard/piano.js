@@ -127,11 +127,18 @@ export class PianoKeyboard extends HTMLElement {
         self.adsrs[note] = self._getNote(note);
       }
       if (e.repeat) {
-        window.postMessage({ hold: note });
+        window.postMessage({
+          time: self.ctx.currentTime,
+          evt: "hold",
+          note: note,
+        });
         self.adsrs[note].hold(self.ctx.currentTime);
       } else {
-        window.postMessage({ trigger: note });
-
+        window.postMessage({
+          time: self.ctx.currentTime,
+          evt: "trigger",
+          note: note,
+        });
         self.adsrs[note].trigger(self.ctx.currentTime);
       }
     };
@@ -143,16 +150,11 @@ export class PianoKeyboard extends HTMLElement {
 
         self.adsrs[note] &&
           self.adsrs[note].triggerRelease(self.ctx.currentTime);
-        window.postMessage({ release: note });
-      }
-    };
-
-    window.onmessage = function (e) {
-      const msg = e.data;
-      if (msg.trigger && msg.note) {
-        (self.adsrs[msg.note] || self._getNote(notes[msg.note])).trigger(
-          self.ctx.currentTime
-        );
+        window.postMessage({
+          time: self.ctx.currentTime,
+          evt: "release",
+          note: note,
+        });
       }
     };
   }
@@ -166,6 +168,8 @@ export class PianoKeyboard extends HTMLElement {
       case "release":
         this.asdr[name] = parseFloat(newval);
         this.rx.innerHTML = JSON.stringify(this.asdr, null, "1");
+        this.adsrs = {};
+
         break;
     }
   }
@@ -178,7 +182,12 @@ export class PianoKeyboard extends HTMLElement {
             isblack(value) ? "black" : "white"
           }"></li>`
       )}
-      </ul>`;
+      </ul>
+      
+      <div id=debug>${Object.values(this.adsrs).map((env) =>
+        [attack, decay, release, sustain].join(",")
+      )}</div>
+      `;
   }
 
   _getNote(note) {
@@ -193,7 +202,7 @@ export class PianoKeyboard extends HTMLElement {
     const { min, max } = this.params;
     var freq_multiplier = freqmultiplierindex[this.params.octave];
 
-    var offfreq_attenuator = new GainNode(ctx, { gain: 0.1 });
+    var offfreq_attenuator = new GainNode(ctx, { gain: 0.5 });
     var osc1 = ctx.createOscillator();
 
     osc1.frequency.value = note * freq_multiplier;
@@ -224,8 +233,6 @@ export class PianoKeyboard extends HTMLElement {
     osc2.start(0);
 
     gain.connect(this.masterGain);
-    gain.connect(this.masterGain);
-    // gainEnvelope.trigger(ctx.currentTime);
     return gainEnvelope;
   }
 }

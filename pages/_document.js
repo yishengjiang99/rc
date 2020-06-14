@@ -1,22 +1,22 @@
 import Document, { Html, Head, Main, NextScript } from "next/document";
+import { useContext, useReducer } from "react";
 
 class MyDocument extends Document {
-  static async getInitialProps(ctx) {
-    const initialProps = await Document.getInitialProps(ctx);
-    return { ...initialProps };
-  }
+  // static async getInitialProps(ctx) {
+  //   const initialProps = await Document.getInitialProps(ctx);
+  //   return { ...initialProps };
+  // }
 
   render() {
     return (
       <Html>
-        <Head>
-          <script type="module" src="./gaudio.js"></script>
-        </Head>
+        <Head></Head>
         <body>
           <Main />
           <NextScript />
-          <div id="console">loading console</div>
-          <script type="module" src="./_console.js"></script>
+          <button id='playbackBtn'>Playback</button>
+          <script type="module" src="./index.js"></script>
+
         </body>
       </Html>
     );

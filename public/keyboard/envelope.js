@@ -1,14 +1,6 @@
-export default function Envelope(
-  min,
-  max,
-  attack,
-  decay,
-  sustain,
-  release,
-  param
-) {
-  this.min = min; //
-  this.max = max;
+export default function Envelope(attack, decay, sustain, release, param) {
+  this.min = 0; //
+  this.max = 1;
   this.sustainLevel = this.max * sustain;
   this.attack = attack;
   this.release = release;
@@ -30,8 +22,10 @@ Envelope.prototype.trigger = async function (time) {
   await sleep(this.decay);
   this.param.setTargetAtTime(0.001, this.decayTime, this.release);
 };
-Envelope.prototype.hold = function (time) {
+Envelope.prototype.hold = async function (time) {
   this.param.cancelAndHoldAtTime(time + this.attack + this.decay);
+  await sleep(this.decay);
+  this.param.setTargetAtTime(0.001, this.decayTime, this.release);
 };
 
 Envelope.prototype.triggerRelease = async function (time) {

@@ -2,9 +2,10 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-undef */
 import Envelope from "./envelope.js";
-const keys = ["a", "w", "s", "e", "d", "f", "t", "g", "y", "h", "u", "j"];
+const keys = ["z", "a", "w", "s", "e", "d", "f", "t", "g", "y", "h", "u", "j"];
 const blackKeys = ["w, e, t, y, u"];
 const notes = [
+  1,
   261.63,
   277.18,
   293.66,
@@ -27,16 +28,16 @@ ul{
   position:relative;
   border:1px solid #160801;
   border-radius:1em;
-  background:black
-  max-width:80em;
+  background-color:black
+  max-width:100em;
 } 
 li {margin:0;padding:0;list-style:none;position:relative;float:left} 
-ul .white{height:12em;width:3.2em;z-index:1;border-left:1px solid #bbb;border-bottom:1px solid #bbb;border-radius:0 0 5px 5px;box-shadow:-1px 0 0 rgba(255,255,255,.8) inset,0 0 5px #ccc inset,0 0 3px rgba(0,0,0,.2);background:linear-gradient(to bottom,#eee 0,#fff 100%);margin:0 0 0 -1em}
+ul .white{height:12em;width:2.9em;z-index:1;border-left:1px solid #bbb;border-bottom:1px solid #bbb;border-radius:0 0 5px 5px;box-shadow:-1px 0 0 rgba(255,255,255,.8) inset,0 0 5px #ccc inset,0 0 3px rgba(0,0,0,.2);background:linear-gradient(to bottom,#eee 0,#fff 100%);margin:0 0 0 -1em}
 ul .white:active{border-top:1px solid #777;border-left:1px solid #999;border-bottom:1px solid #999;box-shadow:2px 0 3px rgba(0,0,0,.1) inset,-5px 5px 20px rgba(0,0,0,.2) inset,0 0 3px rgba(0,0,0,.2);background:linear-gradient(to bottom,#fff 0,#e9e9e9 100%)}
 ul .white.pressed{border-top:1px solid #777;border-left:1px solid #999;border-bottom:1px solid #999;box-shadow:2px 0 3px rgba(0,0,0,.1) inset,-5px 5px 20px rgba(0,0,0,.2) inset,0 0 3px rgba(0,0,0,.2);background:linear-gradient(to bottom,#fff 0,#e9e9e9 100%)}
-.black{height:8em;width:2em;margin:0 0 0 -1em;z-index:2;border:1px solid #000;border-radius:0 0 3px 3px;box-shadow:-1px -1px 2px rgba(255,255,255,.2) inset,0 -5px 2px 3px rgba(0,0,0,.6) inset,0 2px 4px rgba(0,0,0,.5);background:linear-gradient(45deg,#222 0,#555 100%)}
-.black:active{box-shadow:-1px -1px 2px rgba(255,255,255,.2) inset,0 -2px 2px 3px rgba(0,0,0,.6) inset,0 1px 2px rgba(0,0,0,.5);background:linear-gradient(to right,#444 0,#222 100%)}.a,.c,.d,.f,.g{margin:0 0 0 -1em}ul li:first-child{border-radius:5px 0 5px 5px}ul li:last-child{border-radius:0 5px 5px 5px}
-.black.pressed{box-shadow:-1px -1px 2px rgba(255,255,255,.2) inset,0 -2px 2px 3px rgba(0,0,0,.6) inset,0 1px 2px rgba(0,0,0,.5);background:linear-gradient(to right,#444 0,#222 100%)}.a,.c,.d,.f,.g{margin:0 0 0 -1em}ul li:first-child{border-radius:5px 0 5px 5px}ul li:last-child{border-radius:0 5px 5px 5px}`;
+.black {height:8em;width:2em;margin:0 0 0 -1em;z-index:2;border:1px solid #000;border-radius:0 0 3px 3px;box-shadow:-1px -1px 2px rgba(255,255,255,.2) inset,0 -5px 2px 3px rgba(0,0,0,.6) inset,0 2px 4px rgba(0,0,0,.5);background:linear-gradient(45deg,#222 0,#555 100%)}
+.black:active {box-shadow:-1px -1px 2px rgba(255,255,255,.2) inset,0 -2px 2px 3px rgba(0,0,0,.6) inset,0 1px 2px rgba(0,0,0,.5);background:linear-gradient(to right,#444 0,#222 100%)}.a,.c,.d,.f,.g{margin:0 0 0 -1em}ul li:first-child{border-radius:5px 0 5px 5px}ul li:last-child{border-radius:0 5px 5px 5px}
+.black.pressed {box-shadow:-1px -1px 2px rgba(255,255,255,.2) inset,0 -2px 2px 3px rgba(0,0,0,.6) inset,0 1px 2px rgba(0,0,0,.5);background:linear-gradient(to right,#444 0,#222 100%)}.a,.c,.d,.f,.g{margin:0 0 0 -1em}ul li:first-child{border-radius:5px 0 5px 5px}ul li:last-child{border-radius:0 5px 5px 5px}`;
 
 // const waveShaper = hoistingPiano();
 
@@ -62,7 +63,8 @@ export class PianoKeyboard extends HTMLElement {
 
   constructor() {
     super();
-    this.asdr = {
+    this.ctx = window.gctx;
+    this.adsr = {
       attack: 0.02,
       decay: 0.04,
       sustain: 0.4,
@@ -96,13 +98,11 @@ export class PianoKeyboard extends HTMLElement {
 
     this.rx = this.shadowRoot.getElementById("rx");
     this.onNoteEvent = function () {
-      console.log("on note");
+      debugger;
     };
   }
 
   connectedCallback() {
-    this.ctx = this.ctx || window.g_audioCtx || new AudioContext();
-
     var self = this;
 
     this.shadowRoot.querySelectorAll("li").forEach((el) => {
@@ -121,47 +121,57 @@ export class PianoKeyboard extends HTMLElement {
           self.adsrs[note].triggerRelease(self.ctx.currentTime);
       });
     });
-
     window.onkeydown = this._onkeydown.bind(this);
     window.onkeyup = this._onkeyup.bind(this);
   }
-  _onkeydown(e) {
+  async _onkeydown(e) {
+    if (!this.ctx) {
+      this.ctx = await new AudioContext();
+      return;
+    }
+
     const index = keys.indexOf(e.key);
 
     if (index < 0) return;
     let self = this;
     const note = notes[index];
     this.shadowRoot.getElementById(note).classList.toggle("pressed");
-    if (!this.adsrs[note]) {
-      this.adsrs[note] = this._getNote(note);
+    if (!this.adsrs[index]) {
+      this.adsrs[index] = this._getNote(note);
     }
     if (e.repeat) {
-      this.onNoteEvent({
-        time: self.ctx.currentTime,
+      window.postMessage({
+        source: "trackdispatch",
+        time: this.ctx.currentTime,
         type: "hold",
-        noteIndex: note,
+        noteIndex: index,
       });
 
-      this.adsrs[note].hold(self.ctx.currentTime);
+      // this.adsrs[index].hold(this.ctx.currentTime);
     } else {
-      this.onNoteEvent({
-        time: self.ctx.currentTime,
+      this.adsrs[index].trigger(this.ctx.currentTime);
+      window.postMessage({
+        source: "trackdispatch",
+        time: this.ctx.currentTime,
         type: "trigger",
-        noteIndex: note,
+        noteIndex: index,
       });
-      this.adsrs[note].trigger(self.ctx.currentTime);
     }
   }
   _onkeyup(e) {
+    if (!this.ctx) return;
     const index = keys.indexOf(e.key);
     if (index > -1) {
       const note = notes[index];
+      if (this.adsrs[index])
+        this.adsrs[index].triggerRelease(this.ctx.currentTime);
       this.shadowRoot.getElementById(note).classList.toggle("pressed");
-      this.adsrs[note] && this.adsrs[note].triggerRelease(this.ctx.currentTime);
-      this.onNoteEvent({
+
+      window.postMessage({
+        source: "trackdispatch",
         time: this.ctx.currentTime,
         type: "release",
-        noteIndex: note,
+        noteIndex: index,
       });
     }
   }
@@ -173,13 +183,10 @@ export class PianoKeyboard extends HTMLElement {
       case "decay":
       case "sustain":
       case "release":
-        this.asdr[name] = parseFloat(newval);
-        this.rx.innerHTML = JSON.stringify(this.asdr, null, "1");
+        this.adsr[name] = parseFloat(newval);
+        this.rx.innerHTML = JSON.stringify(this.adsr, null, "1");
         this.adsrs = {};
 
-        break;
-      case "trackDispatch":
-        this.onNoteEvent = (e) => dispatch(e);
         break;
       default:
         break;
@@ -203,13 +210,12 @@ export class PianoKeyboard extends HTMLElement {
   }
 
   _getNote(note) {
-    this.ctx = this.ctx || window.g_audioCtx || new AudioContext();
     let ctx = this.ctx;
     this.masterGain = this.masterGain || new GainNode(this.ctx);
     this.masterGain
       .connect(new DynamicsCompressorNode(ctx, { threshold: -80 }))
       .connect(ctx.destination);
-    const { attack, decay, sustain, release } = this.asdr;
+    const { attack, decay, sustain, release } = this.adsr;
     const { min, max } = this.params;
     var freq_multiplier = freqmultiplierindex[this.params.octave];
 
@@ -223,7 +229,7 @@ export class PianoKeyboard extends HTMLElement {
     osc2.frequency.value = note * freq_multiplier * 2;
     osc2.type = "sine";
 
-    var gain = new GainNode(ctx, { gain: 1 });
+    var gain = new GainNode(ctx, { gain: 0 });
 
     if (this.waveShaper) {
       osc1.setPeriodicWave(this.waveShaper);
@@ -231,15 +237,7 @@ export class PianoKeyboard extends HTMLElement {
     }
     osc1.connect(gain);
     osc2.connect(offfreq_attenuator).connect(gain);
-    var gainEnvelope = new Envelope(
-      min,
-      max,
-      attack,
-      decay,
-      sustain,
-      release,
-      gain.gain
-    );
+    var gainEnvelope = new Envelope(attack, decay, sustain, release, gain.gain);
     osc1.start(0);
     osc2.start(0);
 

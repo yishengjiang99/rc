@@ -24,7 +24,6 @@ export const genericConfig = ({
   const [adsr, setAdsr] = useState(defaults);
   const setValue = (attr, val) => {
     adsr[attr] = val;
-
     setAdsr(adsr);
     onInput(attr, val);
   };
@@ -40,6 +39,7 @@ export const genericConfig = ({
               {attribute}: {adsr[attribute]}
             </Typography>
             <Slider
+              onTouchStart={(e) => e.preventDefault()}
               key={`${attribute}-slider`}
               getAriaValueText={`${attribute}-slider-label`}
               defaultValue={defaults[attribute]}
@@ -84,20 +84,22 @@ export const ParamConfig = ({
       <Typography key={`${param}-slider-label`} id={`${param}-slider-label`}>
         {param}: {val}
       </Typography>
-      <Slider
+      <input
+        type="range"
         // disabled={disabled}
         key={`${param}-slider`}
         getAriaValueText={`${param}-slider-label`}
         value={val}
-        onChange={(e, v) => {
-          setVal(v);
-          if (onInput) onInput(e, v);
+        onInput={(e) => {
+          setVal(e.target.value);
+          if (onInput) onInput(e, e.target.value);
         }}
         min={min || 0}
         max={max || 10}
         step={step || 0.01}
+        defaultValue={1}
         getAriaValueText={valuetext}
-      ></Slider>
+      ></input>
     </NoSsr>
   );
 };

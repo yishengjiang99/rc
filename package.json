@@ -5,10 +5,17 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "test": "npx mocha -c test/test.js"
+  },
+  "prettier": {
+    "printWidth": 100,
+    "arrowParens": "avoid",
+    "trailingComma": "none"
   },
   "dependencies": {
     "@babel/plugin-proposal-decorators": "^7.10.1",
+    "@babel/polyfill": "^7.10.1",
     "@material-ui/core": "^4.10.1",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.55",
@@ -18,6 +25,7 @@
     "cheerio": "^1.0.0-rc.3",
     "classnames": "^2.2.6",
     "date-fns": "^2.14.0",
+    "firebase": "^7.15.1",
     "graphql": "^15.1.0",
     "gray-matter": "^4.0.2",
     "i": "^0.3.6",
@@ -34,6 +42,8 @@
     "swr": "^0.2.2"
   },
   "devDependencies": {
+    "azure-storage": "^2.10.3",
+    "pg": "^8.2.1",
     "terser-brunch": "^4.0.0"
   }
 }

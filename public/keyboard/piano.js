@@ -5,9 +5,7 @@ import Envelope from "./envelope.js";
 import { Piano } from "./waves.js";
 const keys = ["a", "w", "s", "e", "d", "f", "t", "g", "y", "h", "u", "j"];
 
-const regularNotes = "261.63, 293.66 , 329.63, 349.23, 392.00, 440.00, 493.88".split(
-  ", "
-);
+const regularNotes = "261.63, 293.66 , 329.63, 349.23, 392.00, 440.00, 493.88".split(", ");
 const regularKeys = "a, s, d, f, g, h, j";
 const blackKeys = ["w, e, t, y, u"];
 const notes = [
@@ -22,9 +20,9 @@ const notes = [
   415.3,
   440,
   466.16,
-  493.88,
+  493.88
 ];
-const isblack = (key) => ["w", "e", "t", "y", "u"].indexOf(key) >= 0;
+const isblack = key => ["w", "e", "t", "y", "u"].indexOf(key) >= 0;
 
 const freqmultiplierindex = [0, 0.25, 0.5, 1, 2, 4];
 const css = `:host{box-sizing:border-box;} 
@@ -55,16 +53,7 @@ export class PianoKeyboard extends HTMLElement {
   }
 
   static get observedAttributes() {
-    return [
-      "attack",
-      "release",
-      "decay",
-      "sustain",
-      "params",
-      "waveshaper",
-      "onNote",
-      "onNoteOff",
-    ];
+    return ["attack", "release", "decay", "sustain", "params", "waveshaper", "onNote", "onNoteOff"];
   }
 
   constructor() {
@@ -73,12 +62,12 @@ export class PianoKeyboard extends HTMLElement {
       attack: 0.05,
       decay: 0.05,
       sustain: 0.1,
-      release: 0.01, //0.01
+      release: 0.01 //0.01
     };
     this.params = {
       min: 0,
       max: 2,
-      octave: 2,
+      octave: 2
     };
     this.waveshaper = waveShaper;
     this.keyDomelements = {};
@@ -93,7 +82,7 @@ export class PianoKeyboard extends HTMLElement {
     this.attachShadow({ mode: "open" });
     this.shadowRoot.innerHTML = `<style>${css}</style><div id=rx></div>`;
     const list = document.createElement("ul");
-    [2, 3, 4].forEach((octave) => {
+    [2, 3, 4].forEach(octave => {
       keys.forEach((key, index) => {
         list.innerHTML += _key(notes[index] * freqmultiplierindex[octave], key);
       });
@@ -105,8 +94,8 @@ export class PianoKeyboard extends HTMLElement {
 
   connectedCallback() {
     var self = this;
-    this.shadowRoot.querySelectorAll("li").forEach((el) => {
-      el.addEventListener("mousedown", (e) => {
+    this.shadowRoot.querySelectorAll("li").forEach(el => {
+      el.addEventListener("mousedown", e => {
         if (!e.target.dataset.note) return false;
         const note = parseFloat(e.target.dataset.note);
         if (!self.adsrs[note]) {
@@ -115,10 +104,9 @@ export class PianoKeyboard extends HTMLElement {
         self.adsrs[note].trigger(self.ctx.currentTime);
       });
 
-      el.addEventListener("mouseup", (e) => {
+      el.addEventListener("mouseup", e => {
         const note = parseFloat(e.target.dataset.note);
-        self.adsrs[note] &&
-          self.adsrs[note].triggerRelease(self.ctx.currentTime);
+        self.adsrs[note] && self.adsrs[note].triggerRelease(self.ctx.currentTime);
       });
     });
 
@@ -145,8 +133,7 @@ export class PianoKeyboard extends HTMLElement {
         const note = notes[index];
         self.shadowRoot.getElementById(note).classList.toggle("pressed");
 
-        self.adsrs[note] &&
-          self.adsrs[note].triggerRelease(self.ctx.currentTime);
+        self.adsrs[note] && self.adsrs[note].triggerRelease(self.ctx.currentTime);
         window.postMessage({ release: note });
       }
     };
@@ -169,9 +156,7 @@ export class PianoKeyboard extends HTMLElement {
     return `<ul>
       ${keys.map(
         (value, index) =>
-          `<li data-note='${notes[index]}' class="${
-            isblack(value) ? "black" : "white"
-          }"></li>`
+          `<li data-note='${notes[index]}' class="${isblack(value) ? "black" : "white"}"></li>`
       )}
       </ul>`;
   }
@@ -203,15 +188,7 @@ export class PianoKeyboard extends HTMLElement {
     }
     osc1.connect(gain);
     osc2.connect(offfreq_attenuator).connect(gain);
-    var gainEnvelope = new Envelope(
-      min,
-      max,
-      attack,
-      decay,
-      sustain,
-      release,
-      gain.gain
-    );
+    var gainEnvelope = new Envelope(min, max, attack, decay, sustain, release, gain.gain);
     osc1.start(0);
     osc2.start(0);
 

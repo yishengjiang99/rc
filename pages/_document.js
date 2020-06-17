@@ -9,7 +9,11 @@ class MyDocument extends Document {
   render() {
     return (
       <Html>
-        <Head></Head>
+        <Head>
+          <script src="https://www.gstatic.com/firebasejs/7.15.1/firebase-app.js"></script>
+          <script src="https://www.gstatic.com/firebasejs/7.15.1/firebase-firestore.js"></script>
+          <script type="module" src="./db.js"></script>
+        </Head>
         <body>
           <Main />
           <NextScript />

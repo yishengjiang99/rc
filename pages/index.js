@@ -10,10 +10,8 @@ export default function indexPage(props) {
     <Container>
       <Playlist files={props.mp3} />
       <Playlist files={props.notes} api="/api/fs/sound/notes" mode="buttons" />
-      <NoSsr>
-        <Sequence rows={12} cols={20} />
-        <Bach />
-      </NoSsr>
+      <Sequence rows={12} cols={20} />
+      <Bach />
     </Container>
   );
 }

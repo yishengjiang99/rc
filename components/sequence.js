@@ -3,6 +3,8 @@ import React from "react";
 import { FastRewind, FastForward, PlayArrow, Pause } from "@material-ui/icons";
 import { IconButton, Toolbar } from "@material-ui/core";
 import { useState, useEffect, useRef } from "react";
+import { PlayTrack } from "./playtrack";
+
 const notes = [
   261.63,
   277.18,
@@ -35,6 +37,7 @@ const Sequence = ({ rows, cols }) => {
   const [msg, setMsg] = useState("");
   const [litKeys, setLitKeys] = useState({});
   var updateTimer;
+
   const toolbarRef = useRef();
   const startTimer = function (reset) {
     if (reset) {
@@ -132,9 +135,9 @@ const Sequence = ({ rows, cols }) => {
       if (msg.trigger) {
         pushNote(msg.trigger);
       } else if (msg.onNoteOff) {
-        _console.log(msg);
+        OffNote(msg.onNoteOff);
       } else if (msg.onNoteHold) {
-        _console.log(msg);
+        pushNote(msg.trigger);
       }
     };
     // toolbarRef.current.style.display = "block";
@@ -157,21 +160,8 @@ const Sequence = ({ rows, cols }) => {
   }
   return (
     <>
-      <Toolbar ref={toolbarRef}>
-        <IconButton>
-          <FastRewind />
-        </IconButton>
-        <IconButton onClick={() => pauseTimer()}>
-          <Pause />
-        </IconButton>
-        <IconButton onClick={() => playback()}>
-          <PlayArrow />
-        </IconButton>
-        <IconButton>
-          <FastForward />
-        </IconButton>
-      </Toolbar>
       <div className="hud">
+        <PlayTrack ref={toolbarRef} />
         {t} | {running ? "running" : "no"}
         <input
           type="number"

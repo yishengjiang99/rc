@@ -1,4 +1,5 @@
 import Document, { Html, Head, Main, NextScript } from "next/document";
+import { useContext, useReducer, createRef } from "react";
 
 class MyDocument extends Document {
   static async getInitialProps(ctx) {
@@ -7,17 +8,17 @@ class MyDocument extends Document {
   }
 
   render() {
+    const gg = createRef();
     return (
       <Html>
         <Head>
-          <script src="https://www.gstatic.com/firebasejs/7.15.1/firebase-app.js"></script>
-          <script src="https://www.gstatic.com/firebasejs/7.15.1/firebase-firestore.js"></script>
-          <script type="module" src="./db.js"></script>
+          <script type="module" src="./index.js"></script>
         </Head>
         <body>
           <Main />
+
           <NextScript />
-          <script type="module" src="./gaudio.js"></script>
+          <button id="playbackBtn">Playback</button>
         </body>
       </Html>
     );

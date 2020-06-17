@@ -6,8 +6,8 @@ import {
   ThemeProvider,
   createMuiTheme,
 } from "@material-ui/core/styles";
-
-import { useContext, createContext } from "react";
+import { Button } from "@material-ui/core";
+import { createRef, useState, useContext, createContext } from "react";
 import purple from "@material-ui/core/colors/purple";
 import green from "@material-ui/core/colors/green";
 import red from "@material-ui/core/colors/red";
@@ -16,12 +16,7 @@ const theme = createMuiTheme({
   palette: {
     primary: purple,
     secondary: green,
-    primary: {
-      main: "#556cd6",
-    },
-    secondary: {
-      main: "#19857b",
-    },
+
     error: {
       main: red.A400,
     },
@@ -40,12 +35,25 @@ const sheets = new ServerStyleSheets();
 export default function App({ Component, pageProps }) {
   const sheets = new ServerStyleSheets();
   const css = sheets.toString();
-
+  const [ctx, setCtx] = useState(null);
+  const gg = createRef();
   return (
     <ThemeProvider theme={theme}>
       {css}
       <DefaultSeo {...SEO} />
-      <Component {...pageProps} />
+      {ctx !== null ? (
+        <Component {...pageProps} />
+      ) : (
+        <Button
+          style={{ width: "80vw", height: "20em" }}
+          onClick={async (e) => {
+            window.gctx = await new AudioContext();
+            setCtx(window.gctx);
+          }}
+        >
+          Click to start
+        </Button>
+      )}
     </ThemeProvider>
   );
 }

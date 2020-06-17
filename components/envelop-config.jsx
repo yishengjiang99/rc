@@ -13,18 +13,23 @@ const useStyles = makeStyles({
 function valuetext(value) {
   return `${value}`;
 }
-const EnvelopConfig = ({ defaults, onInput }) => {
+
+export const genericConfig = ({
+  defaults,
+  onInput,
+  attributes, //["attack", "decay", "sustain", "release"],
+}) => {
+  attributes = attributes || ["attack", "decay", "sustain", "release"];
   const classes = useStyles();
   const [adsr, setAdsr] = useState(defaults);
   const setValue = (attr, val) => {
     adsr[attr] = val;
-
     setAdsr(adsr);
     onInput(attr, val);
   };
   return (
     <div>
-      {["attack", "decay", "sustain", "release"].map((attribute) => {
+      {attributes.map((attribute) => {
         return (
           <Fragment key={attribute}>
             <Typography
@@ -34,6 +39,7 @@ const EnvelopConfig = ({ defaults, onInput }) => {
               {attribute}: {adsr[attribute]}
             </Typography>
             <Slider
+              onTouchStart={(e) => e.preventDefault()}
               key={`${attribute}-slider`}
               getAriaValueText={`${attribute}-slider-label`}
               defaultValue={defaults[attribute]}
@@ -42,7 +48,7 @@ const EnvelopConfig = ({ defaults, onInput }) => {
                 setValue(attribute, v);
               }}
               min={0}
-              max={3}
+              max={1}
               step={0.01}
               getAriaValueText={valuetext}
             ></Slider>
@@ -52,7 +58,12 @@ const EnvelopConfig = ({ defaults, onInput }) => {
     </div>
   );
 };
-
+const EnvelopConfig = ({ defaults, onInput }) =>
+  genericConfig({
+    defaults,
+    onInput,
+    attributes: ["attack", "decay", "sustain", "release"],
+  });
 // const attributeSlider = ( attribute, defaults )=>
 export default EnvelopConfig;
 
@@ -73,20 +84,22 @@ export const ParamConfig = ({
       <Typography key={`${param}-slider-label`} id={`${param}-slider-label`}>
         {param}: {val}
       </Typography>
-      <Slider
+      <input
+        type="range"
         // disabled={disabled}
         key={`${param}-slider`}
         getAriaValueText={`${param}-slider-label`}
         value={val}
-        onChange={(e, v) => {
-          setVal(v);
-          if (onInput) onInput(e, v);
+        onInput={(e) => {
+          setVal(e.target.value);
+          if (onInput) onInput(e, e.target.value);
         }}
         min={min || 0}
         max={max || 10}
         step={step || 0.01}
+        defaultValue={1}
         getAriaValueText={valuetext}
-      ></Slider>
+      ></input>
     </NoSsr>
   );
 };

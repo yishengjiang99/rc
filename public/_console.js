@@ -1,22 +1,12 @@
-const Console = function () {
-  const debug = window.location.hash.substring(1).startsWith("debug");
-
-  var div = document.getElementById("console");
-  //   if (!div) {
-  //   }
-  //   div =
-  //     div ||
-  //     (debug &&
-  //       document.body.append(new HTMLElement("div", { id: "console" })) &&
-  //       document.getElementById("console"));
+export const _console = function () {
+  const debug = true;
   var buffer = Array(10).fill("");
   var position = 0;
-  var display = () => {
-    div.innerHTML =
-      buffer.slice(position % 10, 10).join("") +
-      buffer.slice(0, position % 10).join("");
-  };
-
+  const div =
+    document.getElementById("console") ||
+    (document.createElement("div", { id: "console" }) &&
+      document.body.append(div));
+  var display = () => (div.innerHTML = buffer.join(""));
   return {
     log: function (str) {
       if (typeof str === "object") {
@@ -32,5 +22,3 @@ const Console = function () {
     },
   };
 };
-
-window.onload = () => (window._console = Console());

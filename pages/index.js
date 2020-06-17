@@ -1,19 +1,8 @@
 import EnvelopConfig from "../components/envelop-config";
 import Sequence from "../components/sequence";
 import { Container } from "@material-ui/core";
-import {
-  createContext,
-  useContext,
-  useReducer,
-  useState,
-  useEffect,
-} from "react";
-import {
-  trackReducer,
-  beats_per_page,
-  defaultSettings,
-  initialState,
-} from "../lib/trackstore";
+import { createContext, useContext, useReducer, useState, useEffect } from "react";
+import { trackReducer, beats_per_page, defaultSettings, initialState } from "../lib/trackstore";
 
 const useIsMounted = () => {
   const [mounted, setMounted] = useState(false);
@@ -30,7 +19,7 @@ export default function indexPage(props) {
   function updateAttribute(attribute, value) {
     setSettings({
       ...settings,
-      attribute: value,
+      attribute: value
     });
   }
 
@@ -46,29 +35,14 @@ export default function indexPage(props) {
   }, []);
   return (
     <Container>
-<<<<<<< HEAD
-      <Playlist files={props.mp3} />
-      <Playlist files={props.notes} api="/api/fs/sound/notes" mode="buttons" />
-      <Sequence rows={12} cols={20} />
-      <Bach />
-=======
-      {/* <LeftNav>
+      <Sequence rows={12} cols={20} />\{" "}
+      <LeftNav>
         <EnvelopConfig
           style={{ maxWidth: "200px" }}
           defaults={settings.envelope}
           onInput={updateAttribute}
         ></EnvelopConfig>
-      </LeftNav> */}
-
-      <Sequence
-        trackDispatch={trackDispatch}
-        bitmap={bitmap} //vents.length > 0 && events[events.length - 1]}
-        currentBar={trackState.bar}
-        page={page}
-        rows={12}
-        cols={beats_per_page}
-      />
-
+      </LeftNav>
       {isMounted ? (
         <piano-keyboard
           trackDispatch={trackDispatch}
@@ -80,7 +54,6 @@ export default function indexPage(props) {
       ) : (
         "no ssr"
       )}
->>>>>>> 3f6a659ec2ad4e6bd218bfe52f9044f2ad8eb461
     </Container>
   );
 }

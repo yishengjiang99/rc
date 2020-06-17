@@ -1,0 +1,6 @@
+{
+  "name": "learn-starter",
+  "short_name": "learn-starter",
+  "start_url": "/",
+  "display": "standalone"
+}

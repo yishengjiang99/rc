@@ -64,7 +64,7 @@ const Sequence = ({ cols, rows, currentBar, bitmap, trackDispatch }) => {
   ];
   const LE_SHIFT = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
   const isLit = (bar, noteIndex) => {
-    if (bar > bitmap.lenght) return false;
+    if (bar > bitmap.length) return false;
     else return (bitmap[bar] & LE_MASKS[noteIndex]) >> LE_SHIFT[noteIndex];
   };
   const playback = () => {

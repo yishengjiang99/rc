@@ -13,6 +13,7 @@
     "@material-ui/core": "^4.10.2",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.56",
+    "@xarc/app": "^8.1.6",
     "@xarc/app-dev": "^8.1.5",
     "@xarc/fastify-server": "^1.1.0",
     "babel-plugin-istanbul": "^6.0.0",

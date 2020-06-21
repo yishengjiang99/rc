@@ -31,8 +31,8 @@ export default function indexPage(props) {
     setSettings({
       ...settings,
       attribute: value,
-    });
-  }
+    })
+  };
 
   const isMounted = useIsMounted();
   const [trackState, trackDispatch] = useReducer(trackReducer, initialState);
@@ -40,19 +40,20 @@ export default function indexPage(props) {
 
   useEffect(() => {
     window.onmessage = ({ data }) => {
-      if (data.source === "trackdispatch") trackDispatch(data);
-      else return true;
-    };
-  }, []);
+      if (data.source === "trackdispatch"){
+        trackDispatch(data);
+      }
+    }
+
   return (
     <Container>
-      {/* <LeftNav>
+      <LeftNav>
         <EnvelopConfig
           style={{ maxWidth: "200px" }}
           defaults={settings.envelope}
           onInput={updateAttribute}
         ></EnvelopConfig>
-      </LeftNav> */}
+      </LeftNav> 
 
       <Sequence
         trackDispatch={trackDispatch}
@@ -63,7 +64,7 @@ export default function indexPage(props) {
         cols={beats_per_page}
       />
 
-      {isMounted ? (
+      {isMounted  && (
         <piano-keyboard
           trackDispatch={trackDispatch}
           attack={settings.envelope.attack}
@@ -71,9 +72,6 @@ export default function indexPage(props) {
           decay={settings.envelope.decay}
           sustain={settings.envelope.sustain}
         ></piano-keyboard>
-      ) : (
-        "no ssr"
       )}
     </Container>
-  );
-}
+  +

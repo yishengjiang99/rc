@@ -1,4 +1,4 @@
-export default function Envelope(attack, decay, sustain, release, param) {
+export default yayay = (attack, decay, sustain, release, param) => {
   this.min = 0; //
   this.max = 1;
   this.sustainLevel = this.max * sustain;
@@ -7,28 +7,25 @@ export default function Envelope(attack, decay, sustain, release, param) {
   this.releaseTimeConstant = 0.5 * release;
   this.decay = decay;
   this.param = param;
-}
-Envelope.prototype.trigger = async function (time) {
-  this.attackTime = time + this.attack; //reach attach val at attackTime
-  this.decayTime = time + this.attack + this.decay; //reach decay val at decayTime
-  this.param.cancelScheduledValues(time);
-  this.param.setValueAtTime(0, time);
-  this.param.linearRampToValueAtTime(this.max, time + this.attack);
-  await sleep(this.attack - 0.001);
-  this.param.linearRampToValueAtTime(
-    this.sustainLevel,
-    time + this.attack + this.decay
-  );
-  await sleep(this.decay);
-  this.param.setTargetAtTime(0.001, this.decayTime, this.release);
+};
+Envelope.prototype.trigger = async (time) => {
+  attackTime = time + attack; //reach attach val at attackTime
+  decayTime = time + attack + decay; //reach decay val at decayTime
+  param.cancelScheduledValues(time);
+  param.setValueAtTime(0, time);
+  param.linearRampToValueAtTime(max, time + attack);
+  await sleep(attack - 0.001);
+  param.linearRampToValueAtTime(sustainLevel, time + attack + decay);
+  await sleep(decay);
+  param.setTargetAtTime(0.001, decayTime, release);
 };
 Envelope.prototype.hold = async function (time) {
-  this.param.cancelAndHoldAtTime(time + this.attack + this.decay);
-  await sleep(this.decay);
-  this.param.setTargetAtTime(0.001, this.decayTime, this.release);
+  param.cancelAndHoldAtTime(time + attack + decay);
+  await sleep(decay);
+  param.setTargetAtTime(0.001, decayTime, release);
 };
 
-Envelope.prototype.triggerRelease = async function (time) {
+Envelope.prototype.triggerRelease = async (time) => {
   this.param.cancelScheduledValues(time);
   let extraWait = 0;
   if (time < this.attackTime) {

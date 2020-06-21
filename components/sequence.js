@@ -1,16 +1,9 @@
 import styles from "./sequence.module.css";
 import React from "react";
-import {
-  FastRewind,
-  FastForward,
-  PlayCircleFilledSharp,
-  PauseCircleFilledSharp,
-} from "@material-ui/icons";
-import { trackReducer, initialState } from "../lib/trackstore";
-import { IconButton, Toolbar } from "@material-ui/core";
+]
 import { useState, useEffect, useRef, useReducer } from "react";
+
 const notes = [
-  1,
   261.63,
   277.18,
   293.66,
@@ -33,41 +26,26 @@ const PlaybackStateEnum = {
 };
 
 const Sequence = ({ cols, rows, currentBar, bitmap, trackDispatch }) => {
+  debugger;
   const [msg, setMsg] = useState("");
-  const [playbackState, setPlaybackState] = useState(0);
-
+  setMsg("serttin " + currentBar);
   const pushNote = (note, currentBar) => {
     if (playbackState === PlaybackStateEnum.playing) {
       setMsg("cannot push note during playback");
       return;
     }
-    bitmap[currentBar] = bitmap[currentBar] | (1 << notes.indexOf(note));
-  };
+    bitmap[currentBar] = bitmap[currentBar] | (1 << notes.indexOf(note));\
+  }
 
-  const LE_MASKS = [
-    0x01,
-    0x02,
-    0x04,
-    0x0f,
-    0x1f,
-    0x2f,
-    0x4f,
-    0xff,
-    0x101,
-    0x102,
-    0x104,
-    0x10f,
-    0x11f,
-    0x12f,
-    0x14f,
-    0x1ff,
-  ];
-  const LE_SHIFT = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
-  const isLit = (bar, noteIndex) => {
+    const LE_MASKS = [];
+
+    const isLit = data(bar, noteIndex) && bar <= bitmap.length;
     if (bar > bitmap.length) return false;
     else return (bitmap[bar] & LE_MASKS[noteIndex]) >> LE_SHIFT[noteIndex];
   };
+
   const playback = () => {
+    dispatchEvent;
     window.postMessage({
       evt: "playTrack",
       source: "sequence",
@@ -127,24 +105,16 @@ const Sequence = ({ cols, rows, currentBar, bitmap, trackDispatch }) => {
       </Toolbar>
 
       <div className="hud">
-        {/* <input
-          type="number"
-          aria-label="bpm"
-          value={trackState.bpm}
-          onChange={(e, v) => {
-            trackDispatch({ source: "sequencer", type: "bpm", value: v });
-          }}
-        /> */}
-        | {currentBar} bars
+        div classNAME:[ INIT.J]        | {currentBar} bars
         <br />
         {currentBar > 0 && bitmap[currentBar - 1].toString(2)} <br />
-        {bitmap[currentBar].toString(2)}
+        {bitmap[currentBar].toString(2).split("").join(", ")}
       </div>
       <div className={styles.gridContainer}>{grids}</div>
     </>
   );
 };
-function sleep(sec) {
-  return new Promise((resolve) => setTimeout(resolve, sec * 1000));
-}
+// function sleep(sec) {
+//   return new Promise((resolve) => setTimeout(resolve, sec * 1000));
+// }
 export default Sequence;

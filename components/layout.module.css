@@ -1,25 +1,9 @@
-.container {
-  max-width: 50rem;
-  padding: 0 1rem;
-  margin: 3rem auto 6rem;
-}
+.gridContainer {
+  display: grid;
+  /* grid-template-columns: auto auto auto; */
+  grid-template-columns: repeat(20, 1fr);
+  grid-auto-rows: 2em;
 
-.header {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.headerImage {
-  width: 6rem;
-  height: 6rem;
-}
-
-.headerHomeImage {
-  width: 8rem;
-  height: 8rem;
-}
-
-.backToHome {
-  margin: 3rem 0 0;
-}
+  background-color: #2196f3;
+  padding: 1px;
+)

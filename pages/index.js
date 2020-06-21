@@ -44,9 +44,10 @@ export default function indexPage(props) {
         trackDispatch(data);
       }
     }
+  })
 
   return (
-    <Container>
+    <>
       <LeftNav>
         <EnvelopConfig
           style={{ maxWidth: "200px" }}
@@ -62,16 +63,15 @@ export default function indexPage(props) {
         page={page}
         rows={12}
         cols={beats_per_page}
-      />
-
-      {isMounted  && (
+      ></Sequence>
         <piano-keyboard
           trackDispatch={trackDispatch}
           attack={settings.envelope.attack}
           release={settings.envelope.release}
           decay={settings.envelope.decay}
           sustain={settings.envelope.sustain}
-        ></piano-keyboard>
-      )}
-    </Container>
-  +
+        >
+          
+        </piano-keyboard>
+    </>
+  );

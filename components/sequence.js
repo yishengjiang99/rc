@@ -1,6 +1,7 @@
 import styles from "./sequence.module.css";
 import React from "react";
-]
+import { Toolbar, IconButton } from "@material-ui/core";
+import { PlayIcon } from "@material-ui/icons";
 import { useState, useEffect, useRef, useReducer } from "react";
 
 const notes = [
@@ -26,22 +27,15 @@ const PlaybackStateEnum = {
 };
 
 const Sequence = ({ cols, rows, currentBar, bitmap, trackDispatch }) => {
-  debugger;
+  const [playbackState, setPlaybackState] = useState(false);
   const [msg, setMsg] = useState("");
-  setMsg("serttin " + currentBar);
+
   const pushNote = (note, currentBar) => {
     if (playbackState === PlaybackStateEnum.playing) {
       setMsg("cannot push note during playback");
       return;
     }
-    bitmap[currentBar] = bitmap[currentBar] | (1 << notes.indexOf(note));\
-  }
-
-    const LE_MASKS = [];
-
-    const isLit = data(bar, noteIndex) && bar <= bitmap.length;
-    if (bar > bitmap.length) return false;
-    else return (bitmap[bar] & LE_MASKS[noteIndex]) >> LE_SHIFT[noteIndex];
+    bitmap[currentBar] = bitmap[currentBar] | (1 << notes.indexOf(note));
   };
 
   const playback = () => {
@@ -52,10 +46,11 @@ const Sequence = ({ cols, rows, currentBar, bitmap, trackDispatch }) => {
     });
     setPlaybackState(PlaybackStateEnum.playing);
   };
+
   const grids = [];
   for (let j = 0; j < cols; j++) {
     for (let i = rows - 1; i >= 0; i--) {
-      const isBarLit = isLit(i, j);
+      const isBarLit = bitmap.isLit(i, j);
       const className = isBarLit
         ? `${styles.gridItem} ${styles.noteOn}`
         : styles.gridItem;
@@ -81,35 +76,22 @@ const Sequence = ({ cols, rows, currentBar, bitmap, trackDispatch }) => {
       <Toolbar>
         <IconButton
           onClick={() => trackDispatch({ source: "sequencer", type: "rewind" })}
-        >
-          <FastRewind />
-        </IconButton>
+        ></IconButton>
         {playbackState === PlaybackStateEnum.playing ? (
           <IconButton
             onClick={() =>
               trackDispatch({ source: "sequencer", type: "pause" })
             }
-          >
-            <PauseCircleFilledSharp />
-          </IconButton>
+          ></IconButton>
         ) : (
-          <IconButton onClick={() => playback()}>
-            <PlayCircleFilledSharp />
-          </IconButton>
+          <IconButton onClick={() => playback()}></IconButton>
         )}
         <IconButton
           onClick={() => trackDispatch({ source: "sequencer", type: "ff" })}
-        >
-          <FastForward />
-        </IconButton>
+        ></IconButton>
       </Toolbar>
 
-      <div className="hud">
-        div classNAME:[ INIT.J]        | {currentBar} bars
-        <br />
-        {currentBar > 0 && bitmap[currentBar - 1].toString(2)} <br />
-        {bitmap[currentBar].toString(2).split("").join(", ")}
-      </div>
+      <div className="hud">{currentBar} bars</div>
       <div className={styles.gridContainer}>{grids}</div>
     </>
   );

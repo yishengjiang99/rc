@@ -20,7 +20,6 @@ const fetchAccessToken = (code) =>{
   });
 }
 export default function github(req){ 
-{
   if( !req.queries.access_token && !req,queries.code){
     return <h1><button>LOGIN WITH Github</button></h1>
   }

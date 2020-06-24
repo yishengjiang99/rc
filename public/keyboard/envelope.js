@@ -35,17 +35,12 @@ Envelope.prototype.hold = function (time) {
 Envelope.prototype.triggerRelease = async function (time) {
   this.param.cancelScheduledValues(time);
   let extraWait = 0;
-  if (time < this.attackTime) {
-    await sleep(this.attackTime - time);
-    extraWait = this.attackTime - time;
-    _console.log(extraWait, "extrawait");
-  }
+  // if (time < this.attackTime) {
+  //   await sleep(this.attackTime - time);
+  //   extraWait = this.attackTime - time;
+  // }
 
-  this.param.setTargetAtTime(
-    0.000001,
-    time + extraWait,
-    this.release + extraWait
-  );
+  this.param.setTargetAtTime(0.000001, time + extraWait, this.release);
 };
 
 function sleep(sec) {

@@ -1,9 +1,13 @@
 import styles from "./sequence.module.css";
 import React from "react";
-import { Toolbar, IconButton } from "@material-ui/core";
-import { PlayIcon } from "@material-ui/icons";
-import { useState, useEffect, useRef, useReducer } from "react";
-
+import {
+  FastRewind,
+  FastForward,
+  PlayCircleFilledSharp,
+  PauseCircleFilledSharp,
+} from "@material-ui/icons";
+import { IconButton, Toolbar } from "@material-ui/core";
+import { useState, useEffect, useRef } from "react";
 const notes = [
   261.63,
   277.18,
@@ -25,46 +29,100 @@ const PlaybackStateEnum = {
   playing: 3,
   ended: 4,
 };
-
-const Sequence = ({ cols, rows, currentBar, bitmap, trackDispatch }) => {
-  const [playbackState, setPlaybackState] = useState(false);
+const Sequence = ({ rows, cols }) => {
+  const [track, setTrack] = useState({});
+  const [bpm, setBpm] = useState(133);
+  const [running, setRunning] = useState(false);
+  const [t, setT] = useState(0);
+  const [start, setStart] = useState(new Date().getTime());
+  const [barCursor, setBarCursor] = useState(0);
+  const [playbackState, setPlaybackState] = useState(PlaybackStateEnum.initial);
   const [msg, setMsg] = useState("");
+  const [litKeys, setLitKeys] = useState({});
+  var updateTimer;
+  const toolbarRef = useRef();
+  // const startTimer = function (reset) {
+  //   if (reset) {
+  //     setT(0);
+  //     setStart(new Date().getTime());
+  //     setRunning(true);
+  //     cancelAnimationFrame(updateTimer);
+  //   }
+  //   var _bar = 0;
+  //   const interval = 60000 / bpm / 4;
 
-  const pushNote = (note, currentBar) => {
+  //   const playBeat = () => {
+  //     if (track[_bar]) {
+  //       window.postMessage({ source: "sequence", triggerAttack: track[_bar] });
+  //     }
+  //     _bar++;
+  //     setTimeout(playBear, interval);
+  //   };
+  //   playBeat();
+  // };
+
+  const pushNote = (note) => {
     if (playbackState === PlaybackStateEnum.playing) {
       setMsg("cannot push note during playback");
       return;
     }
-    bitmap[currentBar] = bitmap[currentBar] | (1 << notes.indexOf(note));
+    const noteIndex = notes.indexOf(note);
+    setMsg(`push ${t} with ${noteIndex}`);
+    track[t] = track[t] || [];
+    track[t].push(noteIndex);
+    setTrack(track);
+    setT(t + 1);
+    if (t - barCursor > cols) {
+      setBarCursor(barCursor + cols);
+    }
   };
 
+  const pauseTimer = () => {
+    setRunning(false);
+    setPlaybackState(PlaybackStateEnum.paused);
+    cancelAnimationFrame(updateTimer);
+  };
   const playback = () => {
-    dispatchEvent;
-    window.postMessage({
-      evt: "playTrack",
-      source: "sequence",
-    });
+    window.postMessage({ triggerAttackRelease: track, source: "sequence" });
     setPlaybackState(PlaybackStateEnum.playing);
   };
 
+  useEffect(() => {
+    window.onmessage = (e) => {
+      var msg = e.data;
+
+      if (msg.trigger) {
+        pushNote(msg.trigger);
+      } else if (msg.onNoteOff) {
+        _console.log(msg);
+      } else if (msg.onNoteHold) {
+        _console.log(msg);
+      }
+    };
+    // toolbarRef.current.style.display = "block";
+    return function () {
+      cancelAnimationFrame(updateTimer);
+      window.onmessage = null;
+    };
+  });
   const grids = [];
-  for (let j = 0; j < cols; j++) {
-    for (let i = rows - 1; i >= 0; i--) {
-      const isBarLit = bitmap.isLit(i, j);
-      const className = isBarLit
+  for (let i = rows - 1; i >= 0; i--) {
+    for (let j = 0; j < cols; j++) {
+      var bars = track[j + barCursor] || [];
+
+      const keyLit = bars.indexOf(i) >= 0;
+      const className = keyLit
         ? `${styles.gridItem} ${styles.noteOn}`
         : styles.gridItem;
-
       grids.push(
         <div
-          onClick={() =>
-            trackDispatch({
-              source: "sequence",
-              type: "toggleBitmap",
-              noteIndex: i,
-              bar: j,
-            })
-          }
+          onClick={(e) => {
+            var bars = track[j + barCursor] || [];
+            keyLit ? bars.splice(bars.indexOf(i), 1) : bars.push(i);
+            track[j + barCursor] = bars;
+            setTrack(track);
+            setMsg("update" + (j * cols + i));
+          }}
           key={j * cols + i}
           className={className}
         ></div>
@@ -73,30 +131,40 @@ const Sequence = ({ cols, rows, currentBar, bitmap, trackDispatch }) => {
   }
   return (
     <>
-      <Toolbar>
-        <IconButton
-          onClick={() => trackDispatch({ source: "sequencer", type: "rewind" })}
-        ></IconButton>
+      <Toolbar ref={toolbarRef}>
+        <IconButton>
+          <FastRewind />
+        </IconButton>
         {playbackState === PlaybackStateEnum.playing ? (
-          <IconButton
-            onClick={() =>
-              trackDispatch({ source: "sequencer", type: "pause" })
-            }
-          ></IconButton>
+          <IconButton onClick={() => pauseTimer()}>
+            <PauseCircleFilledSharp />
+          </IconButton>
         ) : (
-          <IconButton onClick={() => playback()}></IconButton>
+          <IconButton onClick={() => playback()}>
+            <PlayCircleFilledSharp />
+          </IconButton>
         )}
-        <IconButton
-          onClick={() => trackDispatch({ source: "sequencer", type: "ff" })}
-        ></IconButton>
+        <IconButton>
+          <FastForward />
+        </IconButton>
       </Toolbar>
-
-      <div className="hud">{currentBar} bars</div>
+      <div className="hud">
+        {t} | {running ? "running" : "no"}
+        <input
+          type="number"
+          aria-label="bpm"
+          value={bpm}
+          onChange={(e, v) => {
+            setBpm(v);
+          }}
+        />
+      </div>
       <div className={styles.gridContainer}>{grids}</div>
+      <div>{JSON.stringify(track)}</div>
     </>
   );
 };
-// function sleep(sec) {
-//   return new Promise((resolve) => setTimeout(resolve, sec * 1000));
-// }
+function sleep(sec) {
+  return new Promise((resolve) => setTimeout(resolve, sec * 1000));
+}
 export default Sequence;

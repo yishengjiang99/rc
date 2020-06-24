@@ -109,47 +109,61 @@ export class PianoKeyboard extends HTMLElement {
       el.addEventListener("mousedown", (e) => {
         if (!e.target.dataset.note) return false;
         const note = parseFloat(e.target.dataset.note);
-        if (!self.adsrs[note]) {
-          self.adsrs[note] = self._getNote(note);
+        if (!adsrs[note]) {
+          adsrs[note] = _getNote(note);
         }
-        self.adsrs[note].trigger(self.ctx.currentTime);
+        adsrs[note].trigger(ctx.currentTime);
       });
 
       el.addEventListener("mouseup", (e) => {
         const note = parseFloat(e.target.dataset.note);
-        self.adsrs[note] &&
-          self.adsrs[note].triggerRelease(self.ctx.currentTime);
+        adsrs[note] && adsrs[note].triggerRelease(ctx.currentTime);
       });
     });
 
     window.onkeydown = function (e) {
-      const index = keys.indexOf(e.key);
-      if (index < 0) return;
-      const note = notes[index];
-      self.shadowRoot.getElementById(note).classList.toggle("pressed");
-      if (!self.adsrs[note]) {
-        self.adsrs[note] = self._getNote(note);
-      }
-      if (e.repeat) {
-        window.postMessage({ hold: note });
-        self.adsrs[note].hold(self.ctx.currentTime);
-      } else {
-        window.postMessage({ trigger: note });
+      const keyIndex = keys.indexOf(e.key);
+      if (keyIndex < 0) return;
 
-        self.adsrs[note].trigger(self.ctx.currentTime);
-      }
+      playNoteIndex(keyIndex).bind(self);
     };
     window.onkeyup = function (e) {
       const index = keys.indexOf(e.key);
       if (index > -1) {
         const note = notes[index];
-        self.shadowRoot.getElementById(note).classList.toggle("pressed");
-
-        self.adsrs[note] &&
-          self.adsrs[note].triggerRelease(self.ctx.currentTime);
-        window.postMessage({ release: note });
+        shadowRoot.getElementById(note).classList.toggle("pressed");
+        releaseNote(index).bind(self);
       }
     };
+    window.onmessage = function (e) {
+      const msg = e.data;
+      if (msg.trigger && msg.note) {
+        (adsrs[msg.note] || _getNote(notes[msg.note])).trigger(ctx.currentTime);
+      }
+    };
+  }
+
+  playNoteIndex = (index) => {
+    const note = notes[index];
+    // self.shadowRoot.getElementById(note).classList.toggle("pressed");
+    if (!adsrs[note]) {
+      adsrs[note] = _getNote(note);
+    }
+    if (e.repeat) {
+      window.postMessage({ hold: note });
+      adsrs[note].hold(ctx.currentTime);
+    } else {
+      window.postMessage({ trigger: note });
+
+      adsrs[note].trigger(ctx.currentTime);
+    }
+  };
+
+  releaseNote(index) {
+    const note = notes[index];
+    var self = this;
+    adsrs && adsrs[note] && adsrs[note].triggerRelease(ctx.currentTime);
+    window.postMessage({ release: note });
   }
 
   attributeChangedCallback(name, oldval, newval) {
@@ -161,6 +175,9 @@ export class PianoKeyboard extends HTMLElement {
       case "release":
         this.asdr[name] = parseFloat(newval);
         this.rx.innerHTML = JSON.stringify(this.asdr, null, "1");
+        Object.values(this.adsrs).forEach(
+          (env) => (env[name] = parseFloat(newval))
+        );
         break;
     }
   }

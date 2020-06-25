@@ -93,11 +93,20 @@ export class PianoKeyboard extends HTMLElement {
       });
     });
     this.shadowRoot.appendChild(list); // += "</ul>";
-
-    // this.shadowRoot.innerHTML += `<div id='rx'>${JSON.stringify(
-    //   this.asdr
-    // )}</div>`;
     this.rx = this.shadowRoot.getElementById("rx");
+
+    this._settings = {
+      osc3: ["sine", "sine", "sine"],
+      chords: [1, 2, 4],
+      gains: [1, 0.25, 0.1],
+    };
+
+    this.settings = new Proxy(this._settings, (attr, idx, value) => {
+      this._settings[attr][idx] = value;
+      this.shadowRoot.querySelectorAll(
+        `[name="${idx}-${attr}"]`
+      )[0].value = value;
+    });
   }
 
   connectedCallback() {
@@ -173,7 +182,7 @@ export class PianoKeyboard extends HTMLElement {
       </ul>`;
   }
 
-  _getNote(note) {
+  _getNote(notefreq) {
     this.ctx = this.ctx || window.g_audioCtx || new AudioContext();
     let ctx = this.ctx;
     this.masterGain = this.masterGain || new GainNode(this.ctx);
@@ -181,25 +190,23 @@ export class PianoKeyboard extends HTMLElement {
     const { attack, decay, sustain, release } = this.asdr;
     const { min, max } = this.params;
     var freq_multiplier = freqmultiplierindex[this.params.octave];
-
-    var offfreq_attenuator = new GainNode(ctx, { gain: 0.1 });
-    var osc1 = ctx.createOscillator();
-
-    osc1.frequency.value = note * freq_multiplier;
-    osc1.type = "square";
-
-    var osc2 = ctx.createOscillator();
-    osc2.frequency.value = note * freq_multiplier * 2;
-    osc2.type = "sine";
-
-    var gain = new GainNode(ctx, { gain: 1 });
-
-    if (this.waveShaper) {
-      osc1.setPeriodicWave(this.waveShaper);
-      osc2.setPeriodicWave(this.waveshaper);
-    }
-    osc1.connect(gain);
-    osc2.connect(offfreq_attenuator).connect(gain);
+    const baseFreq = notefreq * freq_multiplier;
+    const outputGain = new GainNode(ctx, { gain: 0 });
+    this._oscs = [0, 1, 2]
+      .map(
+        (idx) =>
+          new OscillatorNode(ctx, {
+            type: this._settings.osc3[idx],
+            frequency: this._settings.chords[idx] * baseFreq,
+          })
+      )
+      .map((osc, idx) => {
+        var _gain = new GainNode(ctx, { gain: this._settings.gains[idx] });
+        osc.connect(_gain); //new GainNode(ctx, { gain: this._settings.gains[idx] }))
+        _gain.connect(outputGain);
+        osc.start(0);
+      });
+    outputGain.connect(this.masterGain);
     var gainEnvelope = new Envelope(
       min,
       max,
@@ -207,14 +214,8 @@ export class PianoKeyboard extends HTMLElement {
       decay,
       sustain,
       release,
-      gain.gain
+      outputGain.gain
     );
-    osc1.start(0);
-    osc2.start(0);
-
-    gain.connect(this.masterGain);
-    gain.connect(this.masterGain);
-    // gainEnvelope.trigger(ctx.currentTime);
     return gainEnvelope;
   }
 }

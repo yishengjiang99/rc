@@ -1,12 +1,10 @@
 import dynamic from "next/dynamic";
 import LeftNav from "../components/leftnav";
-import Bach from "../components/bach";
+import Eillish from "../components/eillish";
+
 import { Container } from "@material-ui/core";
 import Sequence from "../components/sequence";
-const PlayListNoSsr = dynamic(() => import("../components/playlist"), {
-  loading: () => <p>Loading ...</p>,
-  ssr: false,
-});
+import Playlist from "../components/Playlist";
 
 export default function indexPage(props) {
   const [open, setOpen] = React.useState(false);
@@ -21,14 +19,12 @@ export default function indexPage(props) {
 
   return (
     <>
-      <LeftNav>
-        <PlayListNoSsr api="/api/fs/sound" />;
-        <PlayListNoSsr api="/api/fs/sound/notes" mode="buttons" />;
-      </LeftNav>
+      <LeftNav></LeftNav>
       <Container>
         <Sequence rows={12} cols={20} />
-        <Bach />
+        <Eillish />
       </Container>
+      q
     </>
   );
 }

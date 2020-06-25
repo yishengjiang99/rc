@@ -51,47 +51,44 @@ export const playSong = function () {
 
   var started = 0;
   var timer = new Worker("/timer.js");
+};
 
-  window.onclick = async (e) => {
-    if (started) return;
-    var g_audioCtx = await new AudioContext();
-    main();
-  };
+window.onmessage = ({ data }) => {
+  if (!data.playTrack) return false;
+  window.postMessage("setting up");
+  var queue = [];
+  var timer = new Worker("/timer.js");
+  var piano = PianoKeyboard.getElementById("piano");
+  for (const t in data.playTrack) {
+    const notes = data.playTrack[notes];
 
-  function main() {
-    var p = new PianoKeyboard();
-    function fromKeyboard(_seq) {
-      let sequence = _seq || "adg arhh|adg arhh";
-      const bars = sequence.split("|");
-      bars.forEach((bar) => {
-        notes = bar.split("");
-        notes.forEach((n) => queue.push(n));
-      });
-    }
-
-    function playtick() {
-      var key = queue.unshift();
-      var idx = keys.indexOf(key);
-      var keynote = keynotes[idx];
-      var triads = coords[keynote];
-      var freqs = triads.map((keynote) => notes[keynote][octave]);
-      p._getNote(freqs);
-      p.trigger(g_audioCtx.currentTime);
-    }
-
-    timer.onmessage = ({ data }) => {
-      switch (data) {
-        case "ready":
-          timer.postMessage({ bpm: 60, bar: 4, split: 1 / 4 });
-          break;
-        case "1":
-          patch = 1;
-        case "2":
-        case "3":
-        case "4":
-          playTick();
-          break;
-      }
-    };
+    notes.forEach((e) => queue.push({ t, note }));
   }
+  var timer = new Worker("/timer.js");
+  var lastEnvs;
+  timer.onmessage = ({ data }) => {
+    var cmd = data.split(" ")[0];
+    var arg = data.split(" ")[1];
+    var last;
+    var lastEnvs = lastEnv || [];
+    lastEnvs.forEach();
+    switch (data) {
+      case "load":
+        timer.postMessage({ interval, bpm, beats_per_segment });
+      case "1":
+        piano.settings.gains = [0.9, 0.25, 0.05];
+      case "2":
+      case "3":
+      case "4":
+        const beatCount = parseInt(arg1);
+        while (notes[0] && notes[0].time <= bearCount) {
+          var nextnote = notes.unshift();
+          lastEnvs.push(nextnote);
+          nextnote.trigger(gain, ctx.currentTime);
+        }
+        break;
+      default:
+        break;
+    }
+  };
 };

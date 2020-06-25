@@ -3,6 +3,7 @@
 /* eslint-disable no-undef */
 import Envelope from "./envelope.js";
 import { Piano } from "./waves.js";
+import { chords } from "./Sound.js";
 const keys = ["a", "w", "s", "e", "d", "f", "t", "g", "y", "h", "u", "j"];
 
 const regularNotes = "261.63, 293.66 , 329.63, 349.23, 392.00, 440.00, 493.88".split(
@@ -204,18 +205,28 @@ export class PianoKeyboard extends HTMLElement {
       )}
       </ul>`;
   }
-
-  _getNote(notefreq) {
-    this.ctx = this.ctx || window.g_audioCtx || new AudioContext();
-    let ctx = this.ctx;
+  setupIfNeeded() {
+    if (!this.ctx) {
+      this.ctx = this.ctx || window.g_audioCtx || new AudioContext();
+    }
     this.masterGain = this.masterGain || new GainNode(this.ctx);
     this.masterGain.connect(ctx.destination);
+  }
+  _getNote(notefreq) {
+    setupIfNeeded();
+    let ctx = this.ctx;
     const { attack, decay, sustain, release } = this.asdr;
     const { min, max } = this.params;
     var freq_multiplier = freqmultiplierindex[this.params.octave];
     const baseFreq = notefreq * freq_multiplier;
     const outputGain = new GainNode(ctx, { gain: 0 });
-    this._oscs = [0, 1, 2]
+
+    var freqs =
+      typeof notefreq == array
+        ? notefreq
+        : chords.map((multi) => multi * notefreq);
+
+    this._oscs = freqs
       .map(
         (idx) =>
           new OscillatorNode(ctx, {
@@ -244,3 +255,5 @@ export class PianoKeyboard extends HTMLElement {
 }
 
 window.customElements.define("piano-keyboard", PianoKeyboard);
+
+var sound = require("Sound");

@@ -1,5 +1,4 @@
 import { PianoKeyboard } from "./piano.js";
-
 export const notes = {
   C: [16.35, 32.7, 65.41, 130.81, 261.63, 523.25, 1046.5, 2093.0, 4186.01],
   Db: [17.32, 34.65, 69.3, 138.59, 277.18, 554.37, 1108.73, 2217.46, 4434.92],
@@ -53,7 +52,16 @@ export const playSong = function () {
   var timer = new Worker("/timer.js");
 };
 
-window.onmessage = ({ data }) => {
+var data = {
+  playTrack: {
+    0: [3],
+    1: [4],
+    2: [1],
+  },
+};
+playSequence(a.data);
+
+export function playSequence(data) {
   if (!data.playTrack) return false;
   window.postMessage("setting up");
   var queue = [];
@@ -91,4 +99,4 @@ window.onmessage = ({ data }) => {
         break;
     }
   };
-};
+}

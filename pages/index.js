@@ -1,6 +1,6 @@
 import dynamic from "next/dynamic";
 import LeftNav from "../components/leftnav";
-import Eillish from "../components/eillish";
+import Bach from "../components/Bach";
 
 import { Container } from "@material-ui/core";
 import Sequence from "../components/sequence";
@@ -22,7 +22,7 @@ export default function indexPage(props) {
       <LeftNav></LeftNav>
       <Container>
         <Sequence rows={12} cols={20} />
-        <Eillish />
+        <Bach />
       </Container>
       q
     </>

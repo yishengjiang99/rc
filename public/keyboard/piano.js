@@ -64,8 +64,8 @@ export class PianoKeyboard extends HTMLElement {
   constructor() {
     super();
     this.asdr = {
-      attack: 0.05,
-      decay: 0.05,
+      attack: 1,
+      decay: 1,
       sustain: 0.1,
       release: 0.01, //0.01
     };

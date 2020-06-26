@@ -8,7 +8,6 @@ import {
 } from "@material-ui/icons";
 import { IconButton, Toolbar } from "@material-ui/core";
 import { useState, useEffect, useRef } from "react";
-import { set } from "date-fns";
 const notes = [
   261.63,
   277.18,
@@ -77,7 +76,8 @@ const Sequence = ({ rows, cols }) => {
     cancelAnimationFrame(updateTimer);
   };
   const playback = () => {
-    window.postMessage({ triggerAttackRelease: track, source: "sequence" });
+    console.log("lay tarck console");
+    window.postMessage({ playTrack: track, source: "sequence" });
     setPlaybackState(PlaybackStateEnum.playing);
   };
 

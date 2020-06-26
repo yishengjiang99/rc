@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+	"test": "mocha/bin/mocha"
   },
   "dependencies": {
     "@babel/plugin-proposal-decorators": "^7.10.1",
@@ -15,6 +16,8 @@
     "@polymer/app-media": "^3.0.1",
     "@xarc/fastify-server": "^1.1.0",
     "audio-context": "^1.0.3",
+    "azure-storage": "^2.10.3",
+    "chai": "^4.2.0",
     "cheerio": "^1.0.0-rc.3",
     "classnames": "^2.2.6",
     "date-fns": "^2.14.0",

@@ -51,6 +51,59 @@ export const playSong = function () {
 
   var started = 0;
   var timer = new Worker("/timer.js");
+};
+
+var data = {
+  playTrack: {
+    0: [3],
+    1: [4],
+    2: [1],
+  },
+};
+playSequence(a.data);
+
+export function playSequence(data) {
+  if (!data.playTrack) return false;
+  window.postMessage("setting up");
+  var queue = [];
+  var timer = new Worker("/timer.js");
+  var piano = PianoKeyboard.getElementById("piano");
+  for (const t in data.playTrack) {
+    const notes = data.playTrack[notes];
+
+    notes.forEach((e) => queue.push({ t, note }));
+  }
+  var timer = new Worker("/timer.js");
+  var lastEnvs;
+  timer.onmessage = ({ data }) => {
+    var cmd = data.split(" ")[0];
+    var arg = data.split(" ")[1];
+    var last;
+    var lastEnvs = lastEnv || [];
+    lastEnvs.forEach();
+    switch (data) {
+      case "load":
+        timer.postMessage({ interval, bpm, beats_per_segment });
+      case "1":
+        piano.settings.gains = [0.9, 0.25, 0.05];
+      case "2":
+      case "3":
+      case "4":
+        const beatCount = parseInt(arg1);
+        while (notes[0] && notes[0].time <= bearCount) {
+          var nextnote = notes.unshift();
+          lastEnvs.push(nextnote);
+          nextnote.trigger(gain, ctx.currentTime);
+        }
+        break;
+      default:
+        break;
+    }
+  };
+}
+
+
+
 
   window.onclick = async (e) => {
     if (started) return;
@@ -95,3 +148,4 @@ export const playSong = function () {
     };
   }
 };
+

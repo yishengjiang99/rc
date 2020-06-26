@@ -1,21 +1,20 @@
-import Playlist from "../components/Playlist";
-import Sequence from "../components/Sequence";
+import dynamic from "next/dynamic";
+import LeftNav from "../components/leftnav";
 import Bach from "../components/Bach";
-import LeftNav from "../components/LeftNav";
-import NoSsr from "@material-ui/core/NoSsr";
+
 import { Container } from "@material-ui/core";
-import { ls } from "../lib/posts";
+import Sequence from "../components/sequence";
+import Playlist from "../components/Playlist";
 
 export default function indexPage(props) {
   return (
-    <Container>
-      <Playlist files={props.mp3} />
-      <Playlist files={props.notes} api="/api/fs/sound/notes" mode="buttons" />
-      <NoSsr>
+    <>
+      <LeftNav></LeftNav>
+      <Container>
         <Sequence rows={12} cols={20} />
         <Bach />
-      </NoSsr>
-    </Container>
+      </Container>
+    </>
   );
 }
 export async function getStaticProps() {

@@ -1,4 +1,4 @@
-const Console = function () {
+export const Console = function () {
   const debug = window.location.hash.substring(1).startsWith("debug");
 
   var div = document.getElementById("console");

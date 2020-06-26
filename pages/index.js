@@ -17,11 +17,3 @@ export default function indexPage(props) {
     </>
   );
 }
-export async function getStaticProps() {
-  return {
-    props: {
-      mp3: ls("sound"),
-      notes: ls("sound/notes"),
-    },
-  };
-}

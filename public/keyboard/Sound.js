@@ -1,4 +1,5 @@
 import { PianoKeyboard } from "./piano.js";
+
 export const notes = {
   C: [16.35, 32.7, 65.41, 130.81, 261.63, 523.25, 1046.5, 2093.0, 4186.01],
   Db: [17.32, 34.65, 69.3, 138.59, 277.18, 554.37, 1108.73, 2217.46, 4434.92],
@@ -100,3 +101,51 @@ export function playSequence(data) {
     }
   };
 }
+
+
+
+
+  window.onclick = async (e) => {
+    if (started) return;
+    var g_audioCtx = await new AudioContext();
+    main();
+  };
+
+  function main() {
+    var p = new PianoKeyboard();
+    function fromKeyboard(_seq) {
+      let sequence = _seq || "adg arhh|adg arhh";
+      const bars = sequence.split("|");
+      bars.forEach((bar) => {
+        notes = bar.split("");
+        notes.forEach((n) => queue.push(n));
+      });
+    }
+
+    function playtick() {
+      var key = queue.unshift();
+      var idx = keys.indexOf(key);
+      var keynote = keynotes[idx];
+      var triads = coords[keynote];
+      var freqs = triads.map((keynote) => notes[keynote][octave]);
+      p._getNote(freqs);
+      p.trigger(g_audioCtx.currentTime);
+    }
+
+    timer.onmessage = ({ data }) => {
+      switch (data) {
+        case "ready":
+          timer.postMessage({ bpm: 60, bar: 4, split: 1 / 4 });
+          break;
+        case "1":
+          patch = 1;
+        case "2":
+        case "3":
+        case "4":
+          playTick();
+          break;
+      }
+    };
+  }
+};
+

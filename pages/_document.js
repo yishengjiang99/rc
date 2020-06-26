@@ -11,10 +11,8 @@ class MyDocument extends Document {
       <Html>
         <Head></Head>
         <body>
-          <div id="rx1"></div>
           <Main />
           <NextScript />
-          <div id="debug"></div>
           <script type="module" src="./gaudio.js"></script>
           <script type="module" src="./keyboard/piano.js" />
         </body>

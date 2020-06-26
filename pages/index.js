@@ -7,16 +7,6 @@ import Sequence from "../components/sequence";
 import Playlist from "../components/Playlist";
 
 export default function indexPage(props) {
-  const [open, setOpen] = React.useState(false);
-
-  const handleDrawerOpen = () => {
-    setOpen(true);
-  };
-
-  const handleDrawerClose = () => {
-    setOpen(false);
-  };
-
   return (
     <>
       <LeftNav></LeftNav>
@@ -24,7 +14,14 @@ export default function indexPage(props) {
         <Sequence rows={12} cols={20} />
         <Bach />
       </Container>
-      q
     </>
   );
+}
+export async function getStaticProps() {
+  return {
+    props: {
+      mp3: ls("sound"),
+      notes: ls("sound/notes"),
+    },
+  };
 }

@@ -1,21 +1,19 @@
 var n = -2;
+var interval = interval;
+var t;
 
 onmessage = ({ data }) => {
-  const { bpm, bar, split } = data;
-  var bpm = 60;
-  var split = 4;
-  var interval = (60 * 1000) / bpm / split;
-  var t;
-  if (data == "start") {
-    ostMessage("and");
-    this.n++;
-
-    t = setInterval((e) => {
-      postMessage(this.n % split);
-      this.n++;
+  if (data.interval) {
+    interval = data.interval;
+    var n = 0;
+    t = setInterval(function () {
+      postMessage(n++);
     }, interval);
   }
+
   if (data == "stop") {
     clearInterval(t);
   }
 };
+
+postMessage("load");

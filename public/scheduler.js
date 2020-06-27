@@ -1,4 +1,5 @@
-import { PianoKeyboard } from "./piano.js";
+import { PianoKeyboard } from "./keyboard/piano.js";
+import { Console } from "./_console.js";
 
 export const notes = {
   C: [16.35, 32.7, 65.41, 130.81, 261.63, 523.25, 1046.5, 2093.0, 4186.01],
@@ -14,6 +15,7 @@ export const notes = {
   Bb: [29.14, 58.27, 116.54, 233.08, 466.16, 932.33, 1864.66, 3729.31],
   B: [30.87, 61.74, 123.47, 246.94, 493.88, 987.77, 1975.53, 3951.07],
 };
+const notesOfIndex = Object.values(notes);
 export const chords = {
   C: ["C", "E", "G"],
   Db: ["Db", "F", "Ab"],
@@ -23,7 +25,6 @@ export const chords = {
   Gb: ["Gb", "Bb", "Db"],
   G: ["G", "B", "D"],
 };
-
 export const keys = [
   "a",
   "w",
@@ -43,74 +44,54 @@ export const keynotes = "C, Db, D,  Eb,  E,  F,  Gb, G,  Ab, A,  Bb, B, C".split
   /\s+/
 );
 
-function scheduleSequence(sequence) {
-  var data = {
-    playTrack: {
-      0: [3],
-      1: [4],
-      2: [1],
-      3: [3],
-      4: [4],
-      5: [1],
-    },
-  };
-  var notes = data.playTrack;
-  
-  var timer = new Worker("./offlinetimer.js");
-  timer.onmessage = ({ data }) => {
-    var cmd = data.split(" ")[0];
-    var arg = data.split(" ")[1];
-    var last;
-    var lastEnvs = lastEnv || [];
-    lastEnvs.forEach();
-    switch (data) {
-      case "load":
-        timer.postMessage({ interval, bpm, beats_per_segment });
-      case "1":
-        piano.settings.gains = [0.3, 0.25, 0.05];
-      case "2":
-      case "3":
-      case "4":
-        const beatCount = parseInt(arg1);
-        while (notes[0] && notes[0].time <= bearCount) {
-          var nextnote = notes.unshift();
-          lastEnvs.push(nextnote);
-          nextnote.trigger(gain, ctx.currentTime);
-        }
-        break;
-      default:
-        break;
-    }
-}
-window.onmessage = ({ data }) => {
-  if (!data.playTrack) return false;
-  window.postMessage("setting up");
+const noteIndexFreq = (noteIndex, octave = 4) =>
+  notesOfIndex[noteIndex][octave];
+
+export function scheduleSequence(piano, notes) {
+  const bpm = 60;
+  const beats_perSegment = 4;
 
   var timer = new Worker("./offlinetimer.js");
-  var lastEnvs;
   timer.onmessage = ({ data }) => {
-    var cmd = data.split(" ")[0];
-    var arg = data.split(" ")[1];
-    var last;
-    var lastEnvs = lastEnv || [];
-    lastEnvs.forEach();
+    Console.log("msg");
     switch (data) {
       case "load":
-        timer.postMessage({ interval, bpm, beats_per_segment });
-      case "1":
-        piano.settings.gains = [0.9, 0.25, 0.05];
-      case "2":
-      case "3":
-      case "4":
-        const beatCount = parseInt(arg1);
-        while (notes[0] && notes[0].time <= bearCount) {
-          var nextnote = notes.unshift();
-          lastEnvs.push(nextnote);
-          nextnote.trigger(gain, ctx.currentTime);
-        }
-        break;
+        timer.postMessage({ interval: (bpm / 60) * 1000 });
+        return;
       default:
         break;
     }
+
+    const beatCount = data;
+
+    switch (beatCount % beats_perSegment) {
+      case 1:
+        piano.settings.gains = [0.3, 0.25, 0.05];
+      default:
+        Console.log(beatCount, " bc ");
+        Console.log(notes);
+
+        if (typeof notes[beatCount] === "undefined") {
+          timer.postMessage("stop");
+          break;
+        }
+        notes[beatCount].forEach((noteIndex) => {
+          var freq = noteIndexFreq(noteIndex);
+
+          Console.log("playing " + freq + " at " + piano.ctx.currentTime);
+          var env = piano._getNote(noteIndexFreq(noteIndex));
+          env.trigger(piano.ctx.currentTime);
+        });
+        break;
+    }
   };
-};
+}
+
+export function playbackDeamon() {
+  window.onmessage = ({ data }) => {
+    if (!data.playTrack) return false;
+    window.postMessage("setting up");
+    scheduleSequence(data.playTrack);
+  };
+  window.onunload = () => (window.onmessage = null);
+}

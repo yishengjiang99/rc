@@ -3,6 +3,7 @@
 /* eslint-disable no-undef */
 import Envelope from "./envelope.js";
 import { Piano } from "./waves.js";
+import { playbackDeamon } from "../scheduler.js";
 const keys = ["a", "w", "s", "e", "d", "f", "t", "g", "y", "h", "u", "j"];
 
 const regularNotes = "261.63, 293.66 , 329.63, 349.23, 392.00, 440.00, 493.88".split(
@@ -58,10 +59,12 @@ export class PianoKeyboard extends HTMLElement {
       "waveshaper",
       "onNote",
       "onNoteOff",
+      "ctx",
+      "playtrack",
     ];
   }
 
-  constructor() {
+  constructor(ctx) {
     super();
     this.asdr = {
       attack: 1,
@@ -74,6 +77,7 @@ export class PianoKeyboard extends HTMLElement {
       max: 3,
       octave: 2,
     };
+    this.ctx = ctx;
     this.waveshaper = waveShaper;
     this.keyDomelements = {};
     this.adsrs = {};
@@ -156,6 +160,7 @@ export class PianoKeyboard extends HTMLElement {
         window.postMessage({ release: note });
       }
     };
+    playbackDeamon();
   }
 
   attributeChangedCallback(name, oldval, newval) {
@@ -167,6 +172,9 @@ export class PianoKeyboard extends HTMLElement {
       case "release":
         this.asdr[name] = parseFloat(newval);
         this.rx.innerHTML = JSON.stringify(this.asdr, null, "1");
+        break;
+      case "ctx":
+        this.ctx = newval;
         break;
     }
   }

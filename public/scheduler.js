@@ -44,10 +44,10 @@ export const keynotes = "C, Db, D,  Eb,  E,  F,  Gb, G,  Ab, A,  Bb, B, C".split
   /\s+/
 );
 
-const noteIndexFreq = (noteIndex, octave = 4) =>
+export const noteIndexFreq = (noteIndex, octave = 4) =>
   notesOfIndex[noteIndex][octave];
 
-export function scheduleSequence(piano, notes) {
+export function _scheduleSequence(piano, notes) {
   const bpm = 60;
   const beats_perSegment = 4;
 
@@ -91,7 +91,7 @@ export function playbackDeamon() {
   window.onmessage = ({ data }) => {
     if (!data.playTrack) return false;
     window.postMessage("setting up");
-    scheduleSequence(data.playTrack);
+    _scheduleSequence(data.playTrack);
   };
   window.onunload = () => (window.onmessage = null);
 }

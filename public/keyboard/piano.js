@@ -3,7 +3,8 @@
 /* eslint-disable no-undef */
 import Envelope from "./envelope.js";
 import { Piano } from "./waves.js";
-import { chords } from "./Sound.js";
+import { playbackDeamon, _scheduleSequence } from "../scheduler.js";
+import { box } from "./piano.css.js";
 const keys = ["a", "w", "s", "e", "d", "f", "t", "g", "y", "h", "u", "j"];
 
 const regularNotes = "261.63, 293.66 , 329.63, 349.23, 392.00, 440.00, 493.88".split(
@@ -28,23 +29,6 @@ const notes = [
 const isblack = (key) => ["w", "e", "t", "y", "u"].indexOf(key) >= 0;
 
 const freqmultiplierindex = [0, 0.25, 0.5, 1, 2, 4];
-const css = `:host{box-sizing:border-box;} 
-ul{
-  height:12em;
-  position:relative;
-  border:1px solid #160801;
-  border-radius:1em;
-  background:black
-  max-width:80em;
-} 
-li {margin:0;padding:0;list-style:none;position:relative;float:left} 
-ul .white{height:12em;width:3.2em;z-index:1;border-left:1px solid #bbb;border-bottom:1px solid #bbb;border-radius:0 0 5px 5px;box-shadow:-1px 0 0 rgba(255,255,255,.8) inset,0 0 5px #ccc inset,0 0 3px rgba(0,0,0,.2);background:linear-gradient(to bottom,#eee 0,#fff 100%);margin:0 0 0 -1em}
-ul .white:active{border-top:1px solid #777;border-left:1px solid #999;border-bottom:1px solid #999;box-shadow:2px 0 3px rgba(0,0,0,.1) inset,-5px 5px 20px rgba(0,0,0,.2) inset,0 0 3px rgba(0,0,0,.2);background:linear-gradient(to bottom,#fff 0,#e9e9e9 100%)}
-ul .white.pressed{border-top:1px solid #777;border-left:1px solid #999;border-bottom:1px solid #999;box-shadow:2px 0 3px rgba(0,0,0,.1) inset,-5px 5px 20px rgba(0,0,0,.2) inset,0 0 3px rgba(0,0,0,.2);background:linear-gradient(to bottom,#fff 0,#e9e9e9 100%)}
-.black{height:8em;width:2em;margin:0 0 0 -1em;z-index:2;border:1px solid #000;border-radius:0 0 3px 3px;box-shadow:-1px -1px 2px rgba(255,255,255,.2) inset,0 -5px 2px 3px rgba(0,0,0,.6) inset,0 2px 4px rgba(0,0,0,.5);background:linear-gradient(45deg,#222 0,#555 100%)}
-.black:active{box-shadow:-1px -1px 2px rgba(255,255,255,.2) inset,0 -2px 2px 3px rgba(0,0,0,.6) inset,0 1px 2px rgba(0,0,0,.5);background:linear-gradient(to right,#444 0,#222 100%)}.a,.c,.d,.f,.g{margin:0 0 0 -1em}ul li:first-child{border-radius:5px 0 5px 5px}ul li:last-child{border-radius:0 5px 5px 5px}
-.black.pressed{box-shadow:-1px -1px 2px rgba(255,255,255,.2) inset,0 -2px 2px 3px rgba(0,0,0,.6) inset,0 1px 2px rgba(0,0,0,.5);background:linear-gradient(to right,#444 0,#222 100%)}.a,.c,.d,.f,.g{margin:0 0 0 -1em}ul li:first-child{border-radius:5px 0 5px 5px}ul li:last-child{border-radius:0 5px 5px 5px}`;
-
 const waveShaper = JSON.parse(Piano);
 
 export class PianoKeyboard extends HTMLElement {
@@ -65,10 +49,12 @@ export class PianoKeyboard extends HTMLElement {
       "waveshaper",
       "onNote",
       "onNoteOff",
+      "ctx",
+      "playtrack",
     ];
   }
 
-  constructor() {
+  constructor(ctx) {
     super();
     this.asdr = {
       attack: 1,
@@ -78,9 +64,10 @@ export class PianoKeyboard extends HTMLElement {
     };
     this.params = {
       min: 0,
-      max: 2,
+      max: 3,
       octave: 2,
     };
+    this.ctx = ctx;
     this.waveshaper = waveShaper;
     this.keyDomelements = {};
     this.adsrs = {};
@@ -92,9 +79,9 @@ export class PianoKeyboard extends HTMLElement {
       class="${isblack(key) ? "black" : "white"}"> ${key}</li>`;
     }
     this.attachShadow({ mode: "open" });
-    this.shadowRoot.innerHTML = `<style>${css}</style><div id=rx></div>`;
+    this.shadowRoot.innerHTML = `<style>${box}</style><div id=rx></div>`;
     const list = document.createElement("ul");
-    [2, 3, 4].forEach((octave) => {
+    [3, 4].forEach((octave) => {
       keys.forEach((key, index) => {
         list.innerHTML += _key(notes[index] * freqmultiplierindex[octave], key);
       });
@@ -116,67 +103,57 @@ export class PianoKeyboard extends HTMLElement {
     });
   }
 
+  replayEvents(eventz) {
+    console.log(eventz);
+  }
   connectedCallback() {
     var self = this;
     this.shadowRoot.querySelectorAll("li").forEach((el) => {
       el.addEventListener("mousedown", (e) => {
         if (!e.target.dataset.note) return false;
         const note = parseFloat(e.target.dataset.note);
-        if (!adsrs[note]) {
-          adsrs[note] = _getNote(note);
+        if (!self.adsrs[note]) {
+          self.adsrs[note] = self._getNote(note);
         }
-        adsrs[note].trigger(ctx.currentTime);
+        self.adsrs[note].trigger(self.ctx.currentTime);
       });
 
       el.addEventListener("mouseup", (e) => {
         const note = parseFloat(e.target.dataset.note);
-        adsrs[note] && adsrs[note].triggerRelease(ctx.currentTime);
+        self.adsrs[note] &&
+          self.adsrs[note].triggerRelease(self.ctx.currentTime);
       });
     });
 
     window.onkeydown = function (e) {
-      const keyIndex = keys.indexOf(e.key);
-      if (keyIndex < 0) return;
+      const index = keys.indexOf(e.key);
+      if (index < 0) return;
+      const note = notes[index];
+      self.shadowRoot.getElementById(note).classList.toggle("pressed");
+      if (!self.adsrs[note]) {
+        self.adsrs[note] = self._getNote(note);
+      }
+      if (e.repeat) {
+        window.postMessage({ hold: note });
+        self.adsrs[note].hold(self.ctx.currentTime);
+      } else {
+        window.postMessage({ trigger: note });
 
-      playNoteIndex(keyIndex).bind(self);
+        self.adsrs[note].trigger(self.ctx.currentTime);
+      }
     };
     window.onkeyup = function (e) {
       const index = keys.indexOf(e.key);
       if (index > -1) {
         const note = notes[index];
-        shadowRoot.getElementById(note).classList.toggle("pressed");
-        releaseNote(index).bind(self);
+        self.shadowRoot.getElementById(note).classList.toggle("pressed");
+
+        self.adsrs[note] &&
+          self.adsrs[note].triggerRelease(self.ctx.currentTime);
+        window.postMessage({ release: note });
       }
     };
-    window.onmessage = function (e) {
-      const msg = e.data;
-      if (msg.trigger && msg.note) {
-        (adsrs[msg.note] || _getNote(notes[msg.note])).trigger(ctx.currentTime);
-      }
-    };
-  }
-
-  playNoteIndex = (index) => {
-    const note = notes[index];
-    // self.shadowRoot.getElementById(note).classList.toggle("pressed");
-    if (!adsrs[note]) {
-      adsrs[note] = _getNote(note);
-    }
-    if (e.repeat) {
-      window.postMessage({ hold: note });
-      adsrs[note].hold(ctx.currentTime);
-    } else {
-      window.postMessage({ trigger: note });
-
-      adsrs[note].trigger(ctx.currentTime);
-    }
-  };
-
-  releaseNote(index) {
-    const note = notes[index];
-    var self = this;
-    adsrs && adsrs[note] && adsrs[note].triggerRelease(ctx.currentTime);
-    window.postMessage({ release: note });
+    playbackDeamon();
   }
 
   attributeChangedCallback(name, oldval, newval) {
@@ -188,9 +165,9 @@ export class PianoKeyboard extends HTMLElement {
       case "release":
         this.asdr[name] = parseFloat(newval);
         this.rx.innerHTML = JSON.stringify(this.asdr, null, "1");
-        Object.values(this.adsrs).forEach(
-          (env) => (env[name] = parseFloat(newval))
-        );
+        break;
+      case "ctx":
+        this.ctx = newval;
         break;
     }
   }
@@ -205,28 +182,18 @@ export class PianoKeyboard extends HTMLElement {
       )}
       </ul>`;
   }
-  setupIfNeeded() {
-    if (!this.ctx) {
-      this.ctx = this.ctx || window.g_audioCtx || new AudioContext();
-    }
+
+  _getNote(notefreq) {
+    this.ctx = this.ctx || window.g_audioCtx || new AudioContext();
+    let ctx = this.ctx;
     this.masterGain = this.masterGain || new GainNode(this.ctx);
     this.masterGain.connect(ctx.destination);
-  }
-  _getNote(notefreq) {
-    setupIfNeeded();
-    let ctx = this.ctx;
     const { attack, decay, sustain, release } = this.asdr;
     const { min, max } = this.params;
     var freq_multiplier = freqmultiplierindex[this.params.octave];
     const baseFreq = notefreq * freq_multiplier;
     const outputGain = new GainNode(ctx, { gain: 0 });
-
-    var freqs =
-      typeof notefreq == array
-        ? notefreq
-        : chords.map((multi) => multi * notefreq);
-
-    this._oscs = freqs
+    this._oscs = [0, 1, 2]
       .map(
         (idx) =>
           new OscillatorNode(ctx, {
@@ -255,5 +222,3 @@ export class PianoKeyboard extends HTMLElement {
 }
 
 window.customElements.define("piano-keyboard", PianoKeyboard);
-
-var sound = require("Sound");

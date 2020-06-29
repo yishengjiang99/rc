@@ -1,4 +1,4 @@
-export const Console = function () {
+export const Console = (function () {
   const debug = window.location.hash.substring(1).startsWith("debug");
 
   var div = document.getElementById("console");
@@ -20,10 +20,10 @@ export const Console = function () {
   return {
     log: function (str) {
       if (typeof str === "object") {
-        _console.log(JSON.stringify(str));
+        Console.log(JSON.stringify(str));
         return;
       }
-      if (debug) {
+      if (debug || document.location.href.startsWith("localhost")) {
         var c = position % 10;
         buffer[c] = "<br>" + str;
         position++;
@@ -31,6 +31,4 @@ export const Console = function () {
       }
     },
   };
-};
-
-window.onload = () => (window._console = Console());
+})();

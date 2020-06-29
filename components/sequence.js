@@ -29,46 +29,128 @@ const PlaybackStateEnum = {
   playing: 3,
   ended: 4,
 };
-const Sequence = ({ rows, cols }) => {
+var eventz = [];
+const secondsPerBar = 0.25;
+var canvasWidth, canvasHeight, cellWidth, cellHeight, canvasCtx;
+const Sequence = ({ newEvent, postTrack, rows, cols }) => {
   const [track, setTrack] = useState({});
-  const [bpm, setBpm] = useState(133);
-  const [running, setRunning] = useState(false);
-  const [t, setT] = useState(0);
-  const [start, setStart] = useState(new Date().getTime());
+  const [currentBar, setCurrentBar] = useState(-1);
   const [barCursor, setBarCursor] = useState(0);
+  const [lastNoteTime, setLastNoteTime] = useState(0);
+  const [paintBar, setPaintBar] = useState(null);
   const [playbackState, setPlaybackState] = useState(PlaybackStateEnum.initial);
   const [msg, setMsg] = useState("");
-  const [litKeys, setLitKeys] = useState({});
-  var updateTimer;
-  const toolbarRef = useRef();
-  const startTimer = function (reset) {
-    setT(0);
-    setScrollbar(0);
-    const playBeat = () => {
-      if (track[_bar]) {
-        window.postMessage({ source: "sequence", triggerAttack: track[_bar] });
-      }
-      _bar++;
-      setTimeout(playBear, interval);
-    };
-    playBeat();
-  };
+  const [log, setLog] = useState("");
 
+  const [pendingNotes, setPendingNotes] = useState({});
+
+  var updateTimer, audioCtx;
+  const toolbarRef = useRef();
+  const canvasRef = useRef();
   const pushNote = (note) => {
     if (playbackState === PlaybackStateEnum.playing) {
       setMsg("cannot push note during playback");
       return;
     }
-    const noteIndex = notes.indexOf(note);
-    setMsg(`push ${t} with ${noteIndex}`);
-    track[t] = track[t] || [];
-    track[t].push(noteIndex);
-    setTrack(track);
-    setT(t + 1);
-    if (t - barCursor > cols) {
+    let bar = currentBar;
+    if (note.type == "keydown" && note.time - lastNoteTime > secondsPerBar) {
+      bar = currentBar + 1;
+      setCurrentBar(bar);
+      setLastNoteTime(note.time);
+    }
+    if (note.type == "keydown") {
+      pendingNotes[note.index] = note;
+      setPendingNotes(pendingNotes);
+    } else if (note.type !== "keydown") {
+      var pendingNote = pendingNotes[note.index];
+      if (pendingNote) {
+        note.length = note.time - pendingNote.time;
+      }
+      if (note.type === "keyup") {
+        delete pendingNotes[note.index];
+      }
+    }
+
+    const noteIndex = note.index;
+    track[bar] = track[bar] || {};
+    track[bar][note.index] = note;
+
+    if (bar - barCursor > cols) {
+      //paginate
       setBarCursor(barCursor + cols);
     }
+    if (note.length) {
+      note.bar = bar;
+
+      setPaintBar(note);
+      setLog(
+        log +
+          "\n painting " +
+          note.bar +
+          "|" +
+          note.index +
+          " length " +
+          note.length
+      );
+    }
   };
+
+  const _resizeCanvas = () => {
+    canvasWidth = canvasRef.current.parentElement.clientWidth;
+    cellWidth = canvasWidth / cols;
+    canvasHeight = canvasRef.current.parentElement.clientHeight;
+    cellHeight = canvasHeight / rows;
+    canvasRef.current.setAttribute("width", canvasWidth);
+    canvasRef.current.setAttribute("height", canvasHeight);
+  };
+  useEffect(() => {
+    //on mount
+    _resizeCanvas();
+
+    canvasCtx = canvasRef.current.getContext("2d");
+    canvasCtx.strokeStyle = "rbga(1,1,1,1)";
+    canvasCtx.strokeWidth = "1px";
+    for (let i = 0; i < rows; i++) {
+      canvasCtx.moveTo(0, i * cellHeight);
+      canvasCtx.lineTo(canvasWidth, i * cellHeight);
+      canvasCtx.stroke();
+    }
+    for (let j = 0; j < cols; j++) {
+      canvasCtx.moveTo(j * cellWidth, 0);
+      canvasCtx.lineTo(j * cellWidth, canvasHeight);
+      canvasCtx.stroke();
+    }
+  }, []);
+
+  useEffect(() => {
+    //on new note played
+    // canvasCtx = canvasRef.current.getContext("2d");
+    canvasCtx.fillStyle = "blue";
+    if (paintBar !== null) {
+      canvasCtx.fillRect(
+        (paintBar.bar - barCursor) * cellWidth,
+        paintBar.index * cellHeight,
+        cellWidth - 1,
+        cellHeight - 1
+      );
+      setMsg(
+        "paining now: " +
+          [
+            paintBar.bar * cellWidth,
+            paintBar.index * cellHeight,
+            cellWidth - 1,
+            cellHeight - 1,
+          ].join(", ")
+      );
+    }
+  }, [paintBar]);
+
+  useEffect(() => {
+    //key start, release, hold
+    if (newEvent !== null) {
+      pushNote(newEvent);
+    }
+  }, [newEvent]);
 
   const pauseTimer = () => {
     setRunning(false);
@@ -76,53 +158,12 @@ const Sequence = ({ rows, cols }) => {
     cancelAnimationFrame(updateTimer);
   };
   const playback = () => {
-    console.log("lay tarck console");
-    window.postMessage({ playTrack: track, source: "sequence" });
+    postTrack({
+      track: track,
+      events: eventz,
+    });
     setPlaybackState(PlaybackStateEnum.playing);
   };
-
-  useEffect(() => {
-    window.onmessage = (e) => {
-      var msg = e.data;
-
-      if (msg.trigger) {
-        pushNote(msg.trigger);
-      } else if (msg.onNoteOff) {
-        _console.log(msg);
-      } else if (msg.onNoteHold) {
-        _console.log(msg);
-      }
-    };
-    // toolbarRef.current.style.display = "block";
-    return function () {
-      cancelAnimationFrame(updateTimer);
-      window.onmessage = null;
-    };
-  });
-  const grids = [];
-  for (let i = rows - 1; i >= 0; i--) {
-    for (let j = 0; j < cols; j++) {
-      var bars = track[j + barCursor] || [];
-
-      const keyLit = bars.indexOf(i) >= 0;
-      const className = keyLit
-        ? `${styles.gridItem} ${styles.noteOn}`
-        : styles.gridItem;
-      grids.push(
-        <div
-          onClick={(e) => {
-            var bars = track[j + barCursor] || [];
-            keyLit ? bars.splice(bars.indexOf(i), 1) : bars.push(i);
-            track[j + barCursor] = bars;
-            setTrack(track);
-            setMsg("update" + (j * cols + i));
-          }}
-          key={j * cols + i}
-          className={className}
-        ></div>
-      );
-    }
-  }
   return (
     <>
       <Toolbar ref={toolbarRef}>
@@ -142,19 +183,14 @@ const Sequence = ({ rows, cols }) => {
           <FastForward />
         </IconButton>
       </Toolbar>
-      <div className="hud">
-        {t} | {running ? "running" : "no"}
-        <input
-          type="number"
-          aria-label="bpm"
-          value={bpm}
-          onChange={(e, v) => {
-            setBpm(v);
-          }}
-        />
+      <div className="hud">{currentBar}</div>
+      <div
+        className={styles.gridContainer}
+        style={{ height: "auto", width: "auto", backgroundColor: "gray" }}
+      >
+        <canvas ref={canvasRef} height={rows * 20} width={cols * 20}></canvas>
       </div>
-      <div className={styles.gridContainer}>{grids}</div>
-      <div>{JSON.stringify(track)}</div>
+      <div style={{ position: "fixed", bottom: 10 }}>{log}</div>
     </>
   );
 };

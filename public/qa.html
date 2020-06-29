@@ -1,0 +1,48 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Mocha Tests</title>
+
+    <link href="https://unpkg.com/mocha@4.0.1/mocha.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div id="mocha"></div>
+    <div id="console"></div>
+    <button>START</button>
+    <script src="https://unpkg.com/chai@4.1.2/chai.js"></script>
+    <script src="https://unpkg.com/mocha@4.0.1/mocha.js"></script>
+    <script></script>
+    <script type="module">
+      import { Console } from "./_console.js";
+      import { PianoKeyboard } from "./keyboard/piano.js";
+      import { scheduleSequence, keys } from "./scheduler.js";
+
+      var context = new AudioContext();
+
+      document.querySelector("button").onclick = function (e) {
+        context.resume().then(() => {
+          window.g_audioCtx = context;
+
+          var piano = new PianoKeyboard(context);
+
+          document.body.appendChild(piano);
+          // const env = piano._getNote(200);
+          // env.trigger(ctx.currentTime);
+          // env.triggerRelease(ctx.currentTime + 0.1);
+
+          // const env2 = piano._getNote(33);
+          // env.trigger(ctx.currentTime + 0.4);
+          // env.triggerRelease(ctx.currentTime + 0.41);
+
+          var track = [];
+          "asdfgadgarhadgarh"
+            .split("")
+            .map((k, i) => track.push([keys.indexOf(k)]));
+
+          Console.log(track);
+          scheduleSequence(piano, track);
+        });
+      };
+    </script>
+  </body>
+</html>

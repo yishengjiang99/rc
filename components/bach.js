@@ -1,16 +1,8 @@
 import EnvelopConfig from "./envelop-config";
 import Head from "next/head";
-import { useState } from "react";
-import {
-  Card,
-  Collapse,
-  CardMedia,
-  CardHeader,
-  ChardContent,
-  IconButton,
-} from "@material-ui/core";
-// import "../public/keyboard/piano.js";
-export default function Bach(props) {
+import { useState, useRef, useEffect } from "react";
+
+export default function bach(props) {
   const [settings, setSettings] = useState({
     envelope: {
       attack: 0.1,
@@ -23,6 +15,13 @@ export default function Bach(props) {
       max: 6,
     },
   });
+  const pianoRef = useRef();
+  useEffect(() => {
+    pianoRef.current;
+    debugger;
+    return;
+  }, []);
+
   function updateAttribute(attribute, value) {
     setSettings({
       ...settings,
@@ -43,6 +42,7 @@ export default function Bach(props) {
         ></EnvelopConfig>
       </details>
       <piano-keyboard
+        ref={pianoRef}
         onNote={props.onNote}
         attack={settings.envelope.attack}
         release={settings.envelope.release}
